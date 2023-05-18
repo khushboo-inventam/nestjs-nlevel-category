@@ -4,20 +4,21 @@ exports.CategorySchema = void 0;
 const typeorm_1 = require("typeorm");
 const category_entity_1 = require("./category.entity");
 exports.CategorySchema = new typeorm_1.EntitySchema({
-    name: 'Category',
+    name: "Category",
     target: category_entity_1.Category,
     columns: {
         category_id: {
             type: String,
             primary: true,
-            generated: true
+            generated: true,
         },
         parent_category_id: {
             type: Number,
         },
         name: {
-            type: String
+            type: String,
         },
+        is_deleted: { type: Boolean },
         created_by: {
             type: String,
         },

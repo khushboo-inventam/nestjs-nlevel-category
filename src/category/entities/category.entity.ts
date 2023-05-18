@@ -8,9 +8,9 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity({ name: 'category' })
+@Entity({ name: "category" })
 export class Category {
   @PrimaryGeneratedColumn()
   category_id: number;
@@ -18,11 +18,13 @@ export class Category {
   @Column()
   name: string;
 
-  @Column({ nullable: true, type: 'uuid' })
+  @Column({ default: false })
+  is_deleted: boolean;
+  @Column({ nullable: true, type: "uuid" })
   created_by: string;
-  @Column({ nullable: true, type: 'uuid' })
+  @Column({ nullable: true, type: "uuid" })
   updated_by: string;
-  @Column({ nullable: true, type: 'uuid' })
+  @Column({ nullable: true, type: "uuid" })
   deleted_by: string;
   @Column({ nullable: true, default: Date.now().toString() })
   created_at: string;
@@ -36,5 +38,4 @@ export class Category {
   @ManyToMany(() => Category)
   @JoinTable()
   parent_category_id: Category[];
-
 }

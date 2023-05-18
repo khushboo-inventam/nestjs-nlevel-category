@@ -1,21 +1,23 @@
-import { EntitySchema } from 'typeorm';
-import { Category } from './category.entity';
+import { EntitySchema } from "typeorm";
+import { Category } from "./category.entity";
 
 export const CategorySchema = new EntitySchema<Category>({
-  name: 'Category',
+  name: "Category",
   target: Category,
   columns: {
     category_id: {
       type: String,
       primary: true,
-      generated: true
+      generated: true,
     },
     parent_category_id: {
       type: Number,
     },
     name: {
-      type: String
+      type: String,
     },
+    is_deleted: { type: Boolean },
+    
     created_by: {
       type: String,
     },

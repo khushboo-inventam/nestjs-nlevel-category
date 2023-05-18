@@ -1,6 +1,7 @@
 export declare class Category {
     category_id: number;
     name: string;
+    is_deleted: boolean;
     created_by: string;
     updated_by: string;
     deleted_by: string;

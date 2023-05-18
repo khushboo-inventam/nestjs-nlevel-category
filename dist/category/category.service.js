@@ -22,28 +22,51 @@ let CategoryService = class CategoryService {
         this.repo = repo;
     }
     async create(createCategoryDto) {
-        console.log('this.repo', this.repo);
-        const parentData = await this.repo.find({ where: { category_id: +createCategoryDto.parent_category_id } });
-        console.log('parentData', parentData);
-        const data = await this.repo.save({
-            name: createCategoryDto.name,
-            parent_category_id: parentData
-        });
+        let parentId = 0;
+        let parentData = [];
+        let parentRelation = {};
+        if (typeof createCategoryDto === "object" &&
+            "parent_category_id" in createCategoryDto) {
+            parentId = +createCategoryDto.parent_category_id;
+            console.log("this.repo", this.repo);
+            parentData = await this.repo.find({
+                where: { category_id: +createCategoryDto.parent_category_id },
+            });
+            parentRelation = { parent_category_id: parentData };
+        }
+        console.log("parentData", parentData);
+        const data = await this.repo.save(Object.assign({ name: createCategoryDto.name }, parentRelation));
         return data;
     }
     async findAll() {
-        console.log('this.repo', this.repo);
-        const data = await this.repo.find();
+        console.log("this.repo", this.repo);
+        const data = await this.repo.find({
+            select: {
+                name: true,
+                category_id: true,
+                parent_category_id: true,
+            },
+            join: {
+                alias: "cat",
+                leftJoinAndSelect: {
+                    category_parent_category_id_category: "cat.parent_category_id",
+                },
+            },
+            where: {
+                parent_category_id: true,
+            },
+        });
         return data;
     }
     findOne(id) {
-        return `This action returns a #${id} category`;
+        return this.repo.findOne({
+            relations: { parent_category_id: true },
+            where: { category_id: id },
+        });
     }
     update(id, updateCategoryDto) {
-        return `This action updates a #${id} category`;
     }
     remove(id) {
-        return `This action removes a #${id} category`;
     }
 };
 CategoryService = __decorate([

@@ -8,6 +8,9 @@ import * as path from 'path';
 
 import * as basicAuth from 'express-basic-auth';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import * as winston from 'winston';
+import { WinstonModule } from 'nest-winston';
+
 
 
 dotenv.config({ path: path.resolve(__dirname, `../.env`) });
@@ -21,13 +24,43 @@ async function bootstrap() {
   console.log('port', configService.get<number>('app.port'));
   console.log('host', configService.get<string>('app.host'));
 
-  const app = await NestFactory.create(AppModule);
+  const devTransports = [
+    new winston.transports.Console({
+      level: 'warn',
+    }),
+    new winston.transports.Console({
+      level: 'error',
+    }),
+    new winston.transports.File({
+      level: 'debug',
+      // Create the log directory if it does not exist
+      filename: `logs/unavailable-tracks-${new Date().toLocaleDateString('es-CL')}`,
+    }),
+  ];
+  const prodTransports = [
+    new winston.transports.Console({
+      level: 'warn',
+    }),
+    new winston.transports.Console({
+      level: 'error',
+    }),
+    new winston.transports.File({
+      level: 'debug',
+      // Create the log directory if it does not exist
+      filename: `logs/unavailable-tracks-${new Date().toLocaleDateString('es-CL')}`,
+    }),
+  ];
+  const app = await NestFactory.create(AppModule); 
   app.connectMicroservice<MicroserviceOptions>({
           transport: Transport.TCP,
           options: { retryAttempts: 5, retryDelay: 3000 },
         });
         await app.startAllMicroservices();
-
+//   const app = await NestFactory.create(AppModule, {
+//     logger: WinstonModule.createLogger({
+//       transports: process.env.NODE_ENV === 'production' ? prodTransports : devTransports,
+//     }),
+//   });
 
   const config = new DocumentBuilder()
     .setTitle('Category - Microservice')

@@ -23,15 +23,19 @@ __decorate([
     __metadata("design:type", String)
 ], Category.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true, type: 'uuid' }),
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Category.prototype, "is_deleted", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true, type: "uuid" }),
     __metadata("design:type", String)
 ], Category.prototype, "created_by", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true, type: 'uuid' }),
+    (0, typeorm_1.Column)({ nullable: true, type: "uuid" }),
     __metadata("design:type", String)
 ], Category.prototype, "updated_by", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true, type: 'uuid' }),
+    (0, typeorm_1.Column)({ nullable: true, type: "uuid" }),
     __metadata("design:type", String)
 ], Category.prototype, "deleted_by", void 0);
 __decorate([
@@ -52,7 +56,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Category.prototype, "parent_category_id", void 0);
 Category = Category_1 = __decorate([
-    (0, typeorm_1.Entity)({ name: 'category' })
+    (0, typeorm_1.Entity)({ name: "category" })
 ], Category);
 exports.Category = Category;
 //# sourceMappingURL=category.entity.js.map

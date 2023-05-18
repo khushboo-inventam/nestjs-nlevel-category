@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 const basicAuth = require("express-basic-auth");
 const microservices_1 = require("@nestjs/microservices");
+const winston = require("winston");
 dotenv.config({ path: path.resolve(__dirname, `../.env`) });
 async function bootstrap() {
     const configService = new config_1.ConfigService({ app: (0, app_config_1.default)() });
@@ -17,6 +18,30 @@ async function bootstrap() {
     const host = configService.get('app.host') || 'localhost';
     console.log('port', configService.get('app.port'));
     console.log('host', configService.get('app.host'));
+    const devTransports = [
+        new winston.transports.Console({
+            level: 'warn',
+        }),
+        new winston.transports.Console({
+            level: 'error',
+        }),
+        new winston.transports.File({
+            level: 'debug',
+            filename: `logs/unavailable-tracks-${new Date().toLocaleDateString('es-CL')}`,
+        }),
+    ];
+    const prodTransports = [
+        new winston.transports.Console({
+            level: 'warn',
+        }),
+        new winston.transports.Console({
+            level: 'error',
+        }),
+        new winston.transports.File({
+            level: 'debug',
+            filename: `logs/unavailable-tracks-${new Date().toLocaleDateString('es-CL')}`,
+        }),
+    ];
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.connectMicroservice({
         transport: microservices_1.Transport.TCP,

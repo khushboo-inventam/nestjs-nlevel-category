@@ -6,10 +6,9 @@ export declare class CategoryController {
     constructor(categoryService: CategoryService);
     create(createCategoryDto: CreateCategoryDto): Promise<{
         name: string;
-        parent_category_id: import("./entities/category.entity").Category[];
     } & import("./entities/category.entity").Category>;
     findAll(): Promise<import("./entities/category.entity").Category[]>;
-    findOne(id: string): string;
-    update(id: string, updateCategoryDto: UpdateCategoryDto): string;
-    remove(id: string): string;
+    findOne(id: string): Promise<import("./entities/category.entity").Category>;
+    update(id: string, updateCategoryDto: UpdateCategoryDto): void;
+    remove(id: string): void;
 }
