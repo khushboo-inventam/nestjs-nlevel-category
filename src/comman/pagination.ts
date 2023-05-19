@@ -1,5 +1,5 @@
 export const setPagination = (options) => {
-          console.log("options",options)
+  console.log("options", options);
   let sort;
   if (options?.sort_column) {
     const sortColumn = options.sort_column;
@@ -30,3 +30,7 @@ export const setPagination = (options) => {
 //               where: whereCondition,
 //               ...pagination,
 //             };
+
+export const unixTimestamp = () => {
+  return Math.floor(Date.now() / 1000);
+};

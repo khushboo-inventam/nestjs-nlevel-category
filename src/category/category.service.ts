@@ -6,7 +6,7 @@ import { Category } from "./entities/category.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, ILike, Like, Repository } from "typeorm";
 import { InjectDataSource } from "@nestjs/typeorm";
-import { setPagination } from "src/comman/pagination";
+import { setPagination, unixTimestamp } from "src/comman/pagination";
 
 @Injectable()
 export class CategoryService {
@@ -33,6 +33,7 @@ export class CategoryService {
     const data = await this.repo.save({
       name: createCategoryDto.name,
       ...parentRelation,
+      created_at: unixTimestamp().toString(),
     });
     return data;
   }
@@ -98,11 +99,18 @@ export class CategoryService {
     }
     return this.repo.update(
       { category_id: id },
-      { name: updateCategoryDto.name, ...parentRelation }
+      {
+        name: updateCategoryDto.name,
+        ...parentRelation,
+        updated_at: unixTimestamp().toString(),
+      }
     );
   }
 
   remove(id: number) {
-    return this.repo.update({ category_id: id }, { is_deleted: true });
+    return this.repo.update(
+      { category_id: id },
+      { is_deleted: true, deleted_at: unixTimestamp().toString() }
+    );
   }
 }

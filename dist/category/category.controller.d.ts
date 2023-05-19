@@ -6,6 +6,7 @@ export declare class CategoryController {
     private readonly categoryService;
     constructor(categoryService: CategoryService);
     create(createCategoryDto: CreateCategoryDto): Promise<{
+        created_at: string;
         name: string;
     } & import("./entities/category.entity").Category>;
     findAll(params?: SearchTracksDto): Promise<import("./entities/category.entity").Category[]>;

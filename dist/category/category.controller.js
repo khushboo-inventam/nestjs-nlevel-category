@@ -19,6 +19,7 @@ const create_category_dto_1 = require("./dto/create-category.dto");
 const update_category_dto_1 = require("./dto/update-category.dto");
 const swagger_1 = require("@nestjs/swagger");
 const SearchTracksDto_dto_1 = require("../comman/SearchTracksDto.dto");
+const microservices_1 = require("@nestjs/microservices");
 let CategoryController = class CategoryController {
     constructor(categoryService) {
         this.categoryService = categoryService;
@@ -56,6 +57,7 @@ __decorate([
 ], CategoryController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(":id"),
+    (0, microservices_1.MessagePattern)('category_search_by_category_id'),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

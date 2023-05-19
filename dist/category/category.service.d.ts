@@ -6,6 +6,7 @@ export declare class CategoryService {
     private readonly repo;
     constructor(repo: Repository<Category>);
     create(createCategoryDto: CreateCategoryDto): Promise<{
+        created_at: string;
         name: string;
     } & Category>;
     findAll(params: any): Promise<Category[]>;

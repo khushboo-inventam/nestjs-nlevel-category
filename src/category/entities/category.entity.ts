@@ -26,7 +26,7 @@ export class Category {
   updated_by: string;
   @Column({ nullable: true, type: "uuid" })
   deleted_by: string;
-  @Column({ nullable: true, default: Date.now().toString() })
+  @Column({ nullable: true })
   created_at: string;
   @Column({ nullable: true })
   updated_at: string;

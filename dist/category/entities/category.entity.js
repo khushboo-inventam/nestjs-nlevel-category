@@ -39,7 +39,7 @@ __decorate([
     __metadata("design:type", String)
 ], Category.prototype, "deleted_by", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true, default: Date.now().toString() }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Category.prototype, "created_at", void 0);
 __decorate([

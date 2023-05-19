@@ -36,7 +36,7 @@ let CategoryService = class CategoryService {
             parentRelation = { parent_category_id: parentData };
         }
         console.log("parentData", parentData);
-        const data = await this.repo.save(Object.assign({ name: createCategoryDto.name }, parentRelation));
+        const data = await this.repo.save(Object.assign(Object.assign({ name: createCategoryDto.name }, parentRelation), { created_at: (0, pagination_1.unixTimestamp)().toString() }));
         return data;
     }
     async findAll(params) {
@@ -78,10 +78,10 @@ let CategoryService = class CategoryService {
             });
             parentRelation = { parent_category_id: parentData };
         }
-        return this.repo.update({ category_id: id }, Object.assign({ name: updateCategoryDto.name }, parentRelation));
+        return this.repo.update({ category_id: id }, Object.assign(Object.assign({ name: updateCategoryDto.name }, parentRelation), { updated_at: (0, pagination_1.unixTimestamp)().toString() }));
     }
     remove(id) {
-        return this.repo.update({ category_id: id }, { is_deleted: true });
+        return this.repo.update({ category_id: id }, { is_deleted: true, deleted_at: (0, pagination_1.unixTimestamp)().toString() });
     }
 };
 CategoryService = __decorate([
