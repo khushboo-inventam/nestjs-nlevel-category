@@ -9,6 +9,6 @@ export declare class CategoryController {
     } & import("./entities/category.entity").Category>;
     findAll(): Promise<import("./entities/category.entity").Category[]>;
     findOne(id: string): Promise<import("./entities/category.entity").Category>;
-    update(id: string, updateCategoryDto: UpdateCategoryDto): void;
-    remove(id: string): void;
+    update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<import("typeorm").UpdateResult>;
+    remove(id: string): Promise<import("typeorm").UpdateResult>;
 }

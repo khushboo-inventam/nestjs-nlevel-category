@@ -65,8 +65,10 @@ let CategoryService = class CategoryService {
         });
     }
     update(id, updateCategoryDto) {
+        return this.repo.update({ category_id: id }, { name: updateCategoryDto.name });
     }
     remove(id) {
+        return this.repo.update({ category_id: id }, { is_deleted: true });
     }
 };
 CategoryService = __decorate([

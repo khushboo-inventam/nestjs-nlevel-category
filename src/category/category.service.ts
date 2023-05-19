@@ -72,10 +72,13 @@ export class CategoryService {
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
-   // return this.repo.update({...updateCategoryDto},{ where: { category_id: id } });
+    return this.repo.update(
+      { category_id: id },
+      { name: updateCategoryDto.name }
+    );
   }
 
   remove(id: number) {
- //   return this.repo.update({ where: { category_id: id } });
+    return this.repo.update({ category_id: id }, { is_deleted: true });
   }
 }

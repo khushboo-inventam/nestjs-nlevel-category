@@ -10,6 +10,6 @@ export declare class CategoryService {
     } & Category>;
     findAll(): Promise<Category[]>;
     findOne(id: number): Promise<Category>;
-    update(id: number, updateCategoryDto: UpdateCategoryDto): void;
-    remove(id: number): void;
+    update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<import("typeorm").UpdateResult>;
+    remove(id: number): Promise<import("typeorm").UpdateResult>;
 }
