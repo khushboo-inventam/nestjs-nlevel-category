@@ -18,6 +18,7 @@ const category_service_1 = require("./category.service");
 const create_category_dto_1 = require("./dto/create-category.dto");
 const update_category_dto_1 = require("./dto/update-category.dto");
 const swagger_1 = require("@nestjs/swagger");
+const SearchTracksDto_dto_1 = require("../comman/SearchTracksDto.dto");
 let CategoryController = class CategoryController {
     constructor(categoryService) {
         this.categoryService = categoryService;
@@ -25,8 +26,9 @@ let CategoryController = class CategoryController {
     create(createCategoryDto) {
         return this.categoryService.create(createCategoryDto);
     }
-    findAll() {
-        return this.categoryService.findAll();
+    findAll(params) {
+        console.log("params", params);
+        return this.categoryService.findAll(params);
     }
     findOne(id) {
         return this.categoryService.findOne(+id);
@@ -47,35 +49,36 @@ __decorate([
 ], CategoryController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [SearchTracksDto_dto_1.SearchTracksDto]),
     __metadata("design:returntype", void 0)
 ], CategoryController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CategoryController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Patch)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_category_dto_1.UpdateCategoryDto]),
     __metadata("design:returntype", void 0)
 ], CategoryController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)(":id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CategoryController.prototype, "remove", null);
 CategoryController = __decorate([
-    (0, swagger_1.ApiTags)('category'),
-    (0, common_1.Controller)('category'),
+    (0, swagger_1.ApiTags)("category"),
+    (0, common_1.Controller)("category"),
     __metadata("design:paramtypes", [category_service_1.CategoryService])
 ], CategoryController);
 exports.CategoryController = CategoryController;

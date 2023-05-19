@@ -8,7 +8,7 @@ export declare class CategoryService {
     create(createCategoryDto: CreateCategoryDto): Promise<{
         name: string;
     } & Category>;
-    findAll(): Promise<Category[]>;
+    findAll(params: any): Promise<Category[]>;
     findOne(id: number): Promise<Category>;
     update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<import("typeorm").UpdateResult>;
     remove(id: number): Promise<import("typeorm").UpdateResult>;

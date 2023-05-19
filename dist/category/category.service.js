@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const category_entity_1 = require("./entities/category.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const pagination_1 = require("../comman/pagination");
 let CategoryService = class CategoryService {
     constructor(repo) {
         this.repo = repo;
@@ -38,24 +39,24 @@ let CategoryService = class CategoryService {
         const data = await this.repo.save(Object.assign({ name: createCategoryDto.name }, parentRelation));
         return data;
     }
-    async findAll() {
-        console.log("this.repo", this.repo);
-        const data = await this.repo.find({
-            select: {
+    async findAll(params) {
+        console.log("params.query", params);
+        let pagination = (0, pagination_1.setPagination)(params);
+        let whereCondition = {};
+        if (params === null || params === void 0 ? void 0 : params.search) {
+            Object.assign(whereCondition, { name: (0, typeorm_2.ILike)(`%${params === null || params === void 0 ? void 0 : params.search}%`) });
+        }
+        console.log("whereCondition", whereCondition);
+        const data = await this.repo.find(Object.assign({ select: {
                 name: true,
                 category_id: true,
                 parent_category_id: true,
-            },
-            join: {
-                alias: "cat",
+            }, join: {
+                alias: "category",
                 leftJoinAndSelect: {
-                    category_parent_category_id_category: "cat.parent_category_id",
+                    category_parent_category_id_category: "category.parent_category_id",
                 },
-            },
-            where: {
-                parent_category_id: true,
-            },
-        });
+            }, where: Object.assign({ parent_category_id: true }, whereCondition) }, pagination));
         return data;
     }
     findOne(id) {
@@ -64,8 +65,20 @@ let CategoryService = class CategoryService {
             where: { category_id: id },
         });
     }
-    update(id, updateCategoryDto) {
-        return this.repo.update({ category_id: id }, { name: updateCategoryDto.name });
+    async update(id, updateCategoryDto) {
+        let parentId = 0;
+        let parentData = [];
+        let parentRelation = {};
+        if (typeof updateCategoryDto === "object" &&
+            "parent_category_id" in updateCategoryDto) {
+            parentId = +updateCategoryDto.parent_category_id;
+            console.log("this.repo", this.repo);
+            parentData = await this.repo.find({
+                where: { category_id: +updateCategoryDto.parent_category_id },
+            });
+            parentRelation = { parent_category_id: parentData };
+        }
+        return this.repo.update({ category_id: id }, Object.assign({ name: updateCategoryDto.name }, parentRelation));
     }
     remove(id) {
         return this.repo.update({ category_id: id }, { is_deleted: true });
