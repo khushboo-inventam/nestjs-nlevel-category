@@ -1,12 +1,12 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { CreateCategoryDto } from "./dto/create-category.dto";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { Injectable } from "@nestjs/common";
 // import { Repository } from 'typeorm';
-import { Category } from "./entities/category.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, ILike, Like, Repository } from "typeorm";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { setPagination, unixTimestamp } from "src/comman/pagination";
+import { ILike, Repository } from "typeorm";
+// import { InjectDataSource } from "@nestjs/typeorm";
+import { setPagination, unixTimestamp } from "../common/pagination";
+import { Category } from "./entities/category.entity";
+import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto";
 
 @Injectable()
 export class CategoryService {
@@ -40,8 +40,8 @@ export class CategoryService {
 
   async findAll(params) {
     console.log("params.query", params);
-    let pagination = setPagination(params);
-    let whereCondition = {};
+    const pagination = setPagination(params);
+    const whereCondition = {};
     if (params?.search) {
       Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
     }

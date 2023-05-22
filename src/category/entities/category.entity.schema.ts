@@ -17,7 +17,7 @@ export const CategorySchema = new EntitySchema<Category>({
       type: String,
     },
     is_deleted: { type: Boolean },
-    
+
     created_by: {
       type: String,
     },
