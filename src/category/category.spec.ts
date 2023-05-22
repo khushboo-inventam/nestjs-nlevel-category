@@ -1,19 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CategoryService } from "./category.service";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
-import { CategoryModule } from "./category.module";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
+import { request } from "http";
 
 describe("CATEGORY", () => {
   let app: INestApplication;
   let catServices: CategoryService;
   let client: ClientProxy;
+  let trueData: boolean;
+  let id: string;
+  let detailed: boolean;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-       AppModule,
+        AppModule,
         ClientsModule.register([
           { name: "CATEGORY", transport: Transport.TCP },
         ]),
@@ -55,7 +58,7 @@ describe("CATEGORY", () => {
 
   describe("Category-Module", () => {
     describe("UserLogin", () => {
-      it("Auth Login / (POST)", async () => {
+      it("Category / (POST)", async () => {
         try {
           const response = await client
             .send("category_create", {
@@ -72,21 +75,62 @@ describe("CATEGORY", () => {
         }
       });
 
-      it("Auth Login / (POST) with wrong credentials", async () => {
+      it("Category / (POST) without key", async () => {
         try {
-          const response = await client
-            .send("category_create", {
-              name: ""            
-            })
-            .toPromise();
+          const response = await client.send("category_create", {}).toPromise();
 
           // console.log('response', response, typeof response)
-          expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
           // console.log('err', err, typeof err)
-          expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+//       it("Category / (POST) with wrong parent_category_id", async () => {
+//         try {
+//           const response = await client
+//             .send("category_create", {
+//               name: "WER",
+//               parent_category_id: "15",
+//             })
+//             .toPromise();
+
+//           expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+//         } catch (err) {
+//           expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+//         }
+//       });
+
+      it("Category / (GET) find category_search_by_category_id", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id", +44444)
+            .toPromise();
+          console.log('response.....***************.get  ', response.statusCode)
+          expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
         }
       });
     });
   });
+
+  //   describe('Get category', () => {
+  //           it('/category (GET)', async () => {
+  //             await request(app.getHttpServer()).get(`/category/${id}/`).expect(HttpStatus.UNAUTHORIZED);
+  //           });
+  //           it('/category (GET)', async () => {
+  //             await request(app.getHttpServer())
+  //               .get(`/category/${trueData}/`)
+  //               .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+  //           });
+  //           it('/category (GET)', async () => {
+  //             detailed = false;
+  //             await request(app.getHttpServer())
+  //               .get(`/category/?${detailed}/`)
+
+  //               .expect(HttpStatus.OK);
+  //           });
+  //         });
 });
