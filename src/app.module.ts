@@ -7,7 +7,7 @@ import { AppService } from "./app.service";
 import { CategoryModule } from "./category/category.module";
 import { AllExceptionsFilter } from "./common/all-exceptions.filter";
 import { APP_FILTER } from "@nestjs/core";
-import { CategorySchema } from "./category/entities/category.entity.schema";
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -15,11 +15,11 @@ import { CategorySchema } from "./category/entities/category.entity.schema";
       useFactory: async (configService: ConfigService) => {
         return {
           type: "postgres",
-          host: "localhost",
+          host: "127.0.0.1",
           port: 5432,
           username: "postgres",
-          password: "postgres",
-          database: "cat_micro",
+          password: "root",
+          database: "microservice",
           synchronize: true,
           autoLoadEntities: true,
           //  entities: ['src/**/entities/*.ts'],
@@ -35,11 +35,12 @@ import { CategorySchema } from "./category/entities/category.entity.schema";
     }),
 //      TypeOrmModule.forFeature([CategorySchema]),
     CategoryModule,
+ItemModule,
   ],
   controllers: [AppController],
   providers: [
     {
-      provide: APP_FILTER,
+      provide: APP_FILTER, 
       useClass: AllExceptionsFilter,
     },
     AppService,
