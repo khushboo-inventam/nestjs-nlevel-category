@@ -8,6 +8,7 @@ import { CategoryModule } from "./category/category.module";
 import { AllExceptionsFilter } from "./common/all-exceptions.filter";
 import { APP_FILTER } from "@nestjs/core";
 import { ItemModule } from './item/item.module';
+import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ItemModule } from './item/item.module';
 //      TypeOrmModule.forFeature([CategorySchema]),
     CategoryModule,
 ItemModule,
+DynamicColumnsModule,
   ],
   controllers: [AppController],
   providers: [
