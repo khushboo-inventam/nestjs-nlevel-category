@@ -4,7 +4,7 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Item } from './entities/item.entity';
-import {  setPagination, unixTimestamp } from 'src/common/pagination';
+import { setPagination, unixTimestamp } from 'src/common/pagination';
 
 @Injectable()
 export class ItemService {
@@ -25,7 +25,7 @@ export class ItemService {
 
   async findAll(params) {
     const pagination = setPagination(params);
-    const whereCondition = {};
+    const whereCondition =  {is_deleted : false };
     if (params?.search) {
       Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
     }

@@ -41,7 +41,7 @@ export class CategoryService {
   async findAll(params) {
     console.log("params.query", params);
     const pagination = setPagination(params);
-    const whereCondition = {};
+    const whereCondition =  {is_deleted : false };
     if (params?.search) {
       Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
     }

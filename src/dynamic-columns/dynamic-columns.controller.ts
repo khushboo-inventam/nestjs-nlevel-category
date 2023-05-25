@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { DynamicColumnsService } from './dynamic-columns.service';
 import { CreateDynamicColumnDto } from './dto/create-dynamic-column.dto';
 import { UpdateDynamicColumnDto } from './dto/update-dynamic-column.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { SearchTracksDto } from 'src/common/SearchTracksDto.dto';
 
+
+@ApiTags("dynamic-columns")
 @Controller('dynamic-columns')
 export class DynamicColumnsController {
   constructor(private readonly dynamicColumnsService: DynamicColumnsService) {}
@@ -13,8 +17,8 @@ export class DynamicColumnsController {
   }
 
   @Get()
-  findAll() {
-    return this.dynamicColumnsService.findAll();
+  findAll(@Query() params?: SearchTracksDto) {
+    return this.dynamicColumnsService.findAll(params);
   }
 
   @Get(':id')
