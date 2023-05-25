@@ -49,7 +49,7 @@ export class ItemService {
 
   findOne(id: number) {
     return this.repo.findOne({
-      where: { item_id: id },
+      where: { is_deleted  : false  ,item_id: id },
     });
   }
 

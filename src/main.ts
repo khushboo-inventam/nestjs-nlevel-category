@@ -15,11 +15,11 @@ dotenv.config({ path: path.resolve(__dirname, `../.env`) });
 
 async function bootstrap() {
   const configService = new ConfigService({ app: appConfig() });
-  console.log("configService", configService);
+  // console.log("configService", configService);
   const port = configService.get<number>("app.port") || 3000;
   const host = configService.get<string>("app.host") || "localhost";
-  console.log("port", configService.get<number>("app.port"));
-  console.log("host", configService.get<string>("app.host"));
+  // console.log("port", configService.get<number>("app.port"));
+  // console.log("host", configService.get<string>("app.host"));
 
   const devTransports = [
     new winston.transports.Console({

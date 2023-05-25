@@ -46,7 +46,7 @@ export class DynamicColumnsService {
 
   findOne(id: number) {
     return this.repo.findOne({
-      where: { dynamic_id: id },
+      where: {   is_deleted:false, dynamic_id: id },
     });
   }
 

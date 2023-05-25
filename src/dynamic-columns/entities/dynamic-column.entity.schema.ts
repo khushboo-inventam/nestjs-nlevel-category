@@ -6,7 +6,7 @@ export const DynamicColumnSchema = new EntitySchema<DynamicColumn>({
   target: DynamicColumn,
   columns: {
     dynamic_id: {
-      type: String,
+      type: Number,
       primary: true,
       generated: true,
     },

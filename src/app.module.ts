@@ -9,6 +9,7 @@ import { AllExceptionsFilter } from "./common/all-exceptions.filter";
 import { APP_FILTER } from "@nestjs/core";
 import { ItemModule } from './item/item.module';
 import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
+import { ItemDetailsModule } from './item-details/item-details.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
     CategoryModule,
 ItemModule,
 DynamicColumnsModule,
+ItemDetailsModule,
   ],
   controllers: [AppController],
   providers: [

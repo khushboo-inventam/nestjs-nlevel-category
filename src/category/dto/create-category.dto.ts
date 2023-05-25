@@ -12,7 +12,7 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional({ description: "Enter the payment id" })
+  @ApiPropertyOptional({ description: "Enter the parent category id" })
   @IsOptional()
   @IsNumberString()
   parent_category_id: string;
