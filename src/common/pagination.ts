@@ -9,7 +9,7 @@ export const setPagination = (options) => {
         : "desc";
     sort = { [sortColumn]: order };
   } else {
-    sort = { created_at: "desc" };
+    sort = { 'itemdetail.created_at': "desc" };
   }
   const limit = +options?.limit ? +options.limit : 10;
   const offset =

@@ -3,10 +3,10 @@ import { CreateItemDetailDto } from './dto/create-item-detail.dto';
 import { UpdateItemDetailDto } from './dto/update-item-detail.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemDetail } from './entities/item-detail.entity';
-import { Repository } from 'typeorm';
-import { unixTimestamp } from 'src/common/pagination';
-import { ItemService } from 'src/item/item.service';
-import { DynamicColumnsService } from 'src/dynamic-columns/dynamic-columns.service';
+import { ILike, Repository } from 'typeorm';
+import { setPagination, unixTimestamp } from '../common/pagination';
+import { ItemService } from '../item/item.service';
+import { DynamicColumnsService } from '../dynamic-columns/dynamic-columns.service';
 
 @Injectable()
 export class ItemDetailsService {
@@ -50,8 +50,43 @@ export class ItemDetailsService {
     return data;
   }
 
-  findAll() {
-    return `This action returns all itemDetails`;
+  async findAll(params) {
+
+    const pagination = setPagination(params);
+    console.log('pagination', pagination)
+    const whereCondition = { 'is_deleted': false };
+    if (params?.search) {
+      Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
+    }
+    let data;
+    try {
+      data = await this.repo.find({
+        select: {
+          item_detail_id: true,
+          value: true,
+        },
+
+        join: {
+          alias: "itemdetail",
+          leftJoinAndSelect: {
+            dynamic_id: "itemdetail.dynamic_id",
+            item_id: "itemdetail.item_id",
+          },
+        },
+        where: {
+          //dynamic_id: true,
+          // item_id: true,
+
+          ...whereCondition,
+        },
+        // ...pagination,
+      });
+    } catch (error) {
+      console.log('error', error)
+    }
+
+    return data;
+
   }
 
   findOne(id: number) {

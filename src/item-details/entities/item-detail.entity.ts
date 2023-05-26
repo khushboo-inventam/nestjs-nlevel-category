@@ -1,5 +1,5 @@
-import { DynamicColumn } from "src/dynamic-columns/entities/dynamic-column.entity";
-import { Item } from "src/item/entities/item.entity";
+import { DynamicColumn } from "../../dynamic-columns/entities/dynamic-column.entity";
+import { Item } from "../../item/entities/item.entity";
 import { Column, Entity, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 

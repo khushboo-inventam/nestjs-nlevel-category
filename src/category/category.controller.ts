@@ -46,7 +46,7 @@ export class CategoryController {
   }
 
   //   @Patch(":id")
-  @MessagePattern("task_update_category_by_id")
+  @MessagePattern("category_update_category_by_id")
   update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto
@@ -54,7 +54,7 @@ export class CategoryController {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
-  @MessagePattern("task_delete_by_category_id")
+  @MessagePattern("category_delete_by_category_id")
   //   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.categoryService.remove(+id);

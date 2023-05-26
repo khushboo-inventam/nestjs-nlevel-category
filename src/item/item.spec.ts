@@ -1,12 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CategoryService } from "./category.service";
+import { ItemService } from "./item.service";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
- 
-describe("CATEGORY", () => {
+import { request } from "http";
+
+describe("ITEM", () => {
   let app: INestApplication;
-  let catServices: CategoryService;
+  let catServices: ItemService;
   let client: ClientProxy;
   let trueData: boolean;
   let id: string;
@@ -17,7 +18,7 @@ describe("CATEGORY", () => {
       imports: [
         AppModule,
         ClientsModule.register([
-          { name: "CATEGORY", transport: Transport.TCP },
+          { name: "ITEM", transport: Transport.TCP },
         ]),
       ],
     }).compile();
@@ -36,7 +37,7 @@ describe("CATEGORY", () => {
     await app.startAllMicroservices();
     await app.init();
 
-    client = app.get("CATEGORY");
+    client = app.get("ITEM");
     await client.connect();
 
     //   const response = await request(app.)
@@ -55,14 +56,17 @@ describe("CATEGORY", () => {
     console.log("afterAll");
   });
 
-  describe("Category-Module", () => {
+  describe("Item-Module", () => {
     describe("UserLogin", () => {
-      it("Category / (POST)", async () => {
+      it("Item / (POST)", async () => {
         try {
           const response = await client
-            .send("category_create", {
+            .send("item_create", {
               name: "",
-              parent_category_id: "",
+              item_description: "",
+              image: "",
+              item_code: "",
+
             })
             .toPromise();
 
@@ -74,9 +78,9 @@ describe("CATEGORY", () => {
         }
       });
 
-      it("Category / (POST) without key", async () => {
+      it("Item / (POST) without key", async () => {
         try {
-          const response = await client.send("category_create", {}).toPromise();
+          const response = await client.send("item_create", {}).toPromise();
 
           // console.log('response', response, typeof response)
           expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
@@ -86,12 +90,12 @@ describe("CATEGORY", () => {
         }
       });
 
-//       it("Category / (POST) with wrong parent_category_id", async () => {
+//       it("Item / (POST) with wrong parent_Item_id", async () => {
 //         try {
 //           const response = await client
-//             .send("category_create", {
+//             .send("Item_create", {
 //               name: "WER",
-//               parent_category_id: "15",
+//               parent_Item_id: "15",
 //             })
 //             .toPromise();
 
@@ -101,10 +105,10 @@ describe("CATEGORY", () => {
 //         }
 //       });
 
-      it("Category / (GET) find category_search_by_category_id", async () => {
+      it("Item / (GET) find Item_search_by_Item_id", async () => {
         try {
           const response = await client
-            .send("category_search_by_category_id", +44444)
+            .send("item_search_by_item_id", +1)
             .toPromise();
           console.log('response.....***************.get  ', response.statusCode)
           expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
@@ -115,19 +119,19 @@ describe("CATEGORY", () => {
     });
   });
 
-  //   describe('Get category', () => {
-  //           it('/category (GET)', async () => {
-  //             await request(app.getHttpServer()).get(`/category/${id}/`).expect(HttpStatus.UNAUTHORIZED);
+  //   describe('Get Item', () => {
+  //           it('/Item (GET)', async () => {
+  //             await request(app.getHttpServer()).get(`/Item/${id}/`).expect(HttpStatus.UNAUTHORIZED);
   //           });
-  //           it('/category (GET)', async () => {
+  //           it('/Item (GET)', async () => {
   //             await request(app.getHttpServer())
-  //               .get(`/category/${trueData}/`)
+  //               .get(`/Item/${trueData}/`)
   //               .expect(HttpStatus.INTERNAL_SERVER_ERROR);
   //           });
-  //           it('/category (GET)', async () => {
+  //           it('/Item (GET)', async () => {
   //             detailed = false;
   //             await request(app.getHttpServer())
-  //               .get(`/category/?${detailed}/`)
+  //               .get(`/Item/?${detailed}/`)
 
   //               .expect(HttpStatus.OK);
   //           });

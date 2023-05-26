@@ -3,7 +3,7 @@ import { DynamicColumnsService } from './dynamic-columns.service';
 import { CreateDynamicColumnDto } from './dto/create-dynamic-column.dto';
 import { UpdateDynamicColumnDto } from './dto/update-dynamic-column.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { SearchTracksDto } from 'src/common/SearchTracksDto.dto';
+import { SearchTracksDto } from '../common/SearchTracksDto.dto';
 
 
 @ApiTags("dynamic-columns")

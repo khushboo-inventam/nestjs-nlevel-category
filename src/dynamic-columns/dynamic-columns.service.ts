@@ -4,7 +4,7 @@ import { UpdateDynamicColumnDto } from './dto/update-dynamic-column.dto';
 import { DynamicColumn } from './entities/dynamic-column.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
-import { setPagination, unixTimestamp } from 'src/common/pagination';
+import { setPagination, unixTimestamp } from '../common/pagination';
 
 @Injectable()
 export class DynamicColumnsService {
