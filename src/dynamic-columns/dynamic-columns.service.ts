@@ -39,7 +39,7 @@ export class DynamicColumnsService {
       where: {
         ...whereCondition,
       },
-      ...pagination,
+   //   ...pagination,
     });
     return data;
   }

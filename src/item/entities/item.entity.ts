@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ItemDetail } from "src/item-details/entities/item-detail.entity";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "item" })
 export class Item {
@@ -38,5 +39,6 @@ export class Item {
     @Column({ nullable: true })
     deleted_at: string;
 
-
+    @OneToMany(() => ItemDetail, (ItemDetail) => ItemDetail.items_id)
+    item_detail: ItemDetail[]
 }

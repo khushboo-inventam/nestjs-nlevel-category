@@ -29,19 +29,31 @@ export class ItemService {
     if (params?.search) {
       Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
     }
-    const data = await this.repo.find({
-      select: {
-        name: true,
-        item_id: true,
-        item_code: true,
-        item_description: true,
-        image: true,
-      },
-      where: {
-        ...whereCondition,
-      },
-      ...pagination,
-    });
+    let data;
+    try {
+      data = await this.repo.find({
+        select: {
+          name: true,
+          item_id: true,
+          item_code: true,
+          item_description: true,
+          image: true,
+        },
+        // join: {
+        //   alias: "itemdetail",
+        //   leftJoinAndSelect: {
+        //     itemIdItemId: "itemdetail.item_id",
+        //   },
+        // },
+        where: {
+          ...whereCondition,
+        },
+
+      });
+    } catch (error) {
+      console.log('error', error)
+    }
+
     return data;
   }
 

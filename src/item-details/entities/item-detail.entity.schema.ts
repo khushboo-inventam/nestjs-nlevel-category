@@ -35,10 +35,10 @@ export const ItemDetailSchema = new EntitySchema<ItemDetail>({
     deleted_at: {
       type: String,
     },
-    dynamic_id: {
+    dynamic_col_id: {
       type: Number,
     },
-    item_id: {
+    items_id: {
       type: Number
     }
   }

@@ -3,7 +3,7 @@ import { Item } from "../../item/entities/item.entity";
 import { Column, Entity, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
-@Entity({ name: "item-details" })
+@Entity({ name: "item_details" })
 export class ItemDetail {
     @PrimaryGeneratedColumn()
     item_detail_id: number;
@@ -32,13 +32,13 @@ export class ItemDetail {
     @Column({ nullable: true })
     deleted_at: string;
 
-    @ManyToOne(() => DynamicColumn)
-    @JoinTable({name: 'dynamic_id'})
-    dynamic_id: DynamicColumn;
+    @ManyToOne(() => DynamicColumn, (dynamicColumn) => dynamicColumn.dynamic_id)
+    @JoinTable()
+    dynamic_col_id: DynamicColumn;
 
-    @ManyToOne(() => Item)
-    @JoinTable({name: "item_id"})
-    item_id: Item;
+    @ManyToOne(() => Item, (items) => items.item_id)
+    @JoinTable()
+    items_id : Item;
 
 }
 

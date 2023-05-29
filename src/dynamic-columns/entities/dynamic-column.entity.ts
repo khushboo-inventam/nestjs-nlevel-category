@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ItemDetail } from "src/item-details/entities/item-detail.entity";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "dynamic_column" })
 export class DynamicColumn {
@@ -31,4 +32,7 @@ export class DynamicColumn {
 
     @Column({ nullable: true })
     deleted_at: string;
+
+    @OneToMany(() => ItemDetail, (ItemDetail) => ItemDetail.dynamic_col_id)
+    item_dynamic: ItemDetail[]
 }
