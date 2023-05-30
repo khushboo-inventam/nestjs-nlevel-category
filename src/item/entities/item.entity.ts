@@ -39,6 +39,6 @@ export class Item {
     @Column({ nullable: true })
     deleted_at: string;
 
-    @OneToMany(() => ItemDetail, (ItemDetail) => ItemDetail.items_id)
-    item_detail: ItemDetail[]
+    // @OneToMany(() => ItemDetail, (ItemDetail) => ItemDetail.itemId)
+    // item_details: ItemDetail[]
 }

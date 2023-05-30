@@ -13,7 +13,7 @@ export const ItemDetailSchema = new EntitySchema<ItemDetail>({
     value: {
       type: String,
     },
-    
+
 
     is_deleted: { type: Boolean },
 
@@ -35,21 +35,25 @@ export const ItemDetailSchema = new EntitySchema<ItemDetail>({
     deleted_at: {
       type: String,
     },
-    dynamic_col_id: {
-      type: Number,
-    },
-    items_id: {
-      type: Number
+    // dynamic_col_id: {
+    //   type: Number,
+    // },
+    // item: {
+    //   type: Number
+    // }
+  }
+    ,relations: {
+      // dynamic_id: {
+      //     type: "one-to-one",
+      //     target: "DynamicColumn", // CategoryEntity
+      // },
+      item: {
+        type: "many-to-one",
+        target: "Item",
+        joinColumn: {
+          name: "item_id"
+        }, 
+        inverseSide: 'item_id'
     }
   }
-//   ,relations: {
-//     dynamic_id: {
-//         type: "one-to-one",
-//         target: "DynamicColumn", // CategoryEntity
-//     },
-//     item_id: {
-//       type: "one-to-one",
-//       target: "Item", // CategoryEntity
-//   }
-// }
 });

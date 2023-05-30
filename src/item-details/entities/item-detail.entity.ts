@@ -32,13 +32,13 @@ export class ItemDetail {
     @Column({ nullable: true })
     deleted_at: string;
 
-    @ManyToOne(() => DynamicColumn, (dynamicColumn) => dynamicColumn.dynamic_id)
-    @JoinTable()
-    dynamic_col_id: DynamicColumn;
+    // @ManyToOne(() => DynamicColumn, (dynamicColumn) => dynamicColumn.dynamic_id)
+    // @JoinTable()
+    // dynamic_col_id: DynamicColumn;
 
     @ManyToOne(() => Item, (items) => items.item_id)
-    @JoinTable()
-    items_id : Item;
+    @JoinTable({ name: 'item_id' })
+    item : Item;
 
 }
 

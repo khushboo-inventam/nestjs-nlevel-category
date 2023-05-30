@@ -69,10 +69,11 @@ export class ItemDetailsService {
         join: {
           alias: "itemdetail",
           leftJoinAndSelect: {
-            dynamic_id: "itemdetail.dynamic_id",
+            //dynamic_id: "itemdetail.dynamic_id",
             item_id: "itemdetail.item_id",
           },
         },
+      
         where: {
           //dynamic_id: true,
           // item_id: true,

@@ -33,6 +33,6 @@ export class DynamicColumn {
     @Column({ nullable: true })
     deleted_at: string;
 
-    @OneToMany(() => ItemDetail, (ItemDetail) => ItemDetail.dynamic_col_id)
-    item_dynamic: ItemDetail[]
+    // @OneToMany(() => ItemDetail, (ItemDetail) => ItemDetail.dynamic_col_id)
+    // item_dynamic: ItemDetail[]
 }

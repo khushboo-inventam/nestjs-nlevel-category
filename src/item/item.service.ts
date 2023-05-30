@@ -40,16 +40,22 @@ export class ItemService {
           image: true,
         },
         // join: {
-        //   alias: "itemdetail",
+        //   alias: "items",
         //   leftJoinAndSelect: {
-        //     itemIdItemId: "itemdetail.item_id",
+        //     item: "items.item_id",
         //   },
         // },
+        
+
         where: {
           ...whereCondition,
         },
 
       });
+
+      // data = await this.repo.createQueryBuilder("item")
+      //  // leftJoinAndSelect("item_details", "items", "items.itemItemId = item.item_id")
+      console.log('data', data)
     } catch (error) {
       console.log('error', error)
     }

@@ -31,7 +31,6 @@ import { ItemDetailsModule } from './item-details/item-details.module';
 
       dataSourceFactory: async (options) => {
         const dataSource = await new DataSource(options).initialize();
-        console.log("dataSource", dataSource);
         return dataSource;
       },
     }),
