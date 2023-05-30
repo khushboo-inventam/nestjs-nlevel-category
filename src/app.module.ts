@@ -22,10 +22,10 @@ import { ItemDetailsModule } from './item-details/item-details.module';
           username: "postgres",
           password: "root",
           database: "microservice",
-          synchronize: true,
+          synchronize: false,
           autoLoadEntities: true,
           //  entities: ['src/**/entities/*.ts'],
-          // migrations: ['src/database/migrations/*.js'],
+          migrations: ['src/common/migrations/*.js'],
         };
       },
 
@@ -34,19 +34,19 @@ import { ItemDetailsModule } from './item-details/item-details.module';
         return dataSource;
       },
     }),
-//      TypeOrmModule.forFeature([CategorySchema]),
+    //      TypeOrmModule.forFeature([CategorySchema]),
     CategoryModule,
-ItemModule,
-DynamicColumnsModule,
-ItemDetailsModule,
+    ItemModule,
+    DynamicColumnsModule,
+    ItemDetailsModule,
   ],
   controllers: [AppController],
   providers: [
     {
-      provide: APP_FILTER, 
+      provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
     AppService,
   ],
 })
-export class AppModule {}
+export class AppModule { }
