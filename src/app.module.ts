@@ -10,6 +10,7 @@ import { APP_FILTER } from "@nestjs/core";
 import { ItemModule } from './item/item.module';
 import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
 import { ItemDetailsModule } from './item-details/item-details.module';
+import DatabaseModule from "./common/database.module";
 
 @Module({
   imports: [
@@ -25,8 +26,12 @@ import { ItemDetailsModule } from './item-details/item-details.module';
           synchronize: false,
           autoLoadEntities: true,
           //  entities: ['src/**/entities/*.ts'],
-          migrations: ['src/common/migrations/*.js'],
+          migrations: ['dist/common/migrations/*.ts'],
+          cli: {
+            migrationDir: 'src/common/migrations/*.ts'
+          }
         };
+
       },
 
       dataSourceFactory: async (options) => {
@@ -35,6 +40,7 @@ import { ItemDetailsModule } from './item-details/item-details.module';
       },
     }),
     //      TypeOrmModule.forFeature([CategorySchema]),
+    // DatabaseModule  ,
     CategoryModule,
     ItemModule,
     DynamicColumnsModule,

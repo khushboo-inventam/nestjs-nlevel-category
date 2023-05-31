@@ -7,10 +7,10 @@ export class CreateItemDetailDto {
     @IsNotEmpty()
     value: string;
 
-    @ApiProperty({ description: "Enter the dynamic column id " })
-    @IsString()
-    @IsNumberString()
-    dynamic_id: string;
+    // @ApiProperty({ description: "Enter the dynamic column id " })
+    // @IsString()
+    // @IsNumberString()
+    // dynamic_id: string;
 
     @ApiProperty({ description: "Enter the payment id" })
     @IsString()

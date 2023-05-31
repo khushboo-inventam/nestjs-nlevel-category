@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typ
 
 @Entity({ name: "item" })
 export class Item {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     item_id: number;
 
     @Column({ nullable: false, unique: true })
@@ -21,13 +21,13 @@ export class Item {
     @Column({ default: false })
     is_deleted: boolean;
 
-    @Column({ nullable: true, type: "uuid" })
+    @Column({ nullable: true})
     created_by: string;
 
-    @Column({ nullable: true, type: "uuid" })
+    @Column({ nullable: true})
     updated_by: string;
 
-    @Column({ nullable: true, type: "uuid" })
+    @Column({ nullable: true})
     deleted_by: string;
 
     @Column({ nullable: true })

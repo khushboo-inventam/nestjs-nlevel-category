@@ -22,29 +22,30 @@ export class ItemDetailsService {
   async create(createItemDetailDto: CreateItemDetailDto) {
 
 
-    let newData = {}
+    // let newData = {}
 
-    if (
-      typeof createItemDetailDto === "object" &&
-      "dynamic_id" in createItemDetailDto
-    ) {
-      let dynamicData = await this.dynamicColumnsService.findOne(+createItemDetailDto.dynamic_id);
+    // if (
+    //   typeof createItemDetailDto === "object" &&
+    //   "dynamic_id" in createItemDetailDto
+    // ) {
+    //   let dynamicData = await this.dynamicColumnsService.findOne(+createItemDetailDto.dynamic_id);
 
-      Object.assign(newData, { dynamic_id: dynamicData })
-    }
+    //   Object.assign(newData, { dynamic_id: dynamicData })
+    // }
 
-    if (
-      typeof createItemDetailDto === "object" &&
-      "item_id" in createItemDetailDto
-    ) {
-      let itemData = await this.itemService.findOne(+createItemDetailDto.item_id);
+    // if (
+    //   typeof createItemDetailDto === "object" &&
+    //   "item_id" in createItemDetailDto
+    // ) {
+    //   let itemData = await this.itemService.findOne(+createItemDetailDto.item_id);
 
-      Object.assign(newData, { item_id: itemData })
-    }
+    //   Object.assign(newData, { item_id: itemData })
+    // }
 
     const data = await this.repo.save({
-      value: createItemDetailDto.value,
-      ...newData,
+      //   value: createItemDetailDto.value,
+      //...newData,
+      ...createItemDetailDto,
       created_at: unixTimestamp().toString(),
     });
     return data;
@@ -73,7 +74,7 @@ export class ItemDetailsService {
             item_id: "itemdetail.item_id",
           },
         },
-      
+
         where: {
           //dynamic_id: true,
           // item_id: true,

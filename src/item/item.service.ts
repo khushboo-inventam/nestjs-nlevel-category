@@ -14,12 +14,19 @@ export class ItemService {
   ) { }
 
   async create(createItemDto: CreateItemDto) {
+    let data
+    try {
 
-    const data = await this.repo.save({
-      ...createItemDto,
-      // item_code: generatePublicId(),
-      created_at: unixTimestamp().toString(),
-    });
+      data = await this.repo.save({
+        ...createItemDto,
+        // item_code: generatePublicId(),
+        is_deleted: false,
+        created_at: unixTimestamp().toString(),
+      });
+    } catch (error) {
+      console.log('error ', error
+      )
+    }
     return data;
   }
 
@@ -31,29 +38,33 @@ export class ItemService {
     }
     let data;
     try {
-      data = await this.repo.find({
-        select: {
-          name: true,
-          item_id: true,
-          item_code: true,
-          item_description: true,
-          image: true,
-        },
-        // join: {
-        //   alias: "items",
-        //   leftJoinAndSelect: {
-        //     item: "items.item_id",
-        //   },
-        // },
-        
+      // data = await this.repo.find({
+      //   select: {
+      //     name: true,
+      //     item_id: true,
+      //     item_code: true,
+      //     item_de scription: true,
+      //     image: true,
+      //   },
+      //   // join: {
+      //   //   alias: "items",
+      //   //   leftJoinAndSelect: {
+      //   //     item: "items.item_id",
+      //   //   },
+      //   // },
+      //   relations:{
+      //     item_id : true
+      //   },
 
-        where: {
-          ...whereCondition,
-        },
+      //   where: {
+      //     ...whereCondition,
+      //   },
 
-      });
+      // });
 
-      // data = await this.repo.createQueryBuilder("item")
+
+      const QBData = await this.repo.createQueryBuilder("item").
+        leftJoinAndSelect("item_details", "itemd", "itemd.item_id = item.item_id")
       //  // leftJoinAndSelect("item_details", "items", "items.itemItemId = item.item_id")
       console.log('data', data)
     } catch (error) {

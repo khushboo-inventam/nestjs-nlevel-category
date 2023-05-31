@@ -5,7 +5,7 @@ import { Column, Entity, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn 
 
 @Entity({ name: "item_details" })
 export class ItemDetail {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     item_detail_id: number;
 
     @Column({ nullable: false })
