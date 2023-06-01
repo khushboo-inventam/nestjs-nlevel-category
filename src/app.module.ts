@@ -30,6 +30,7 @@ import DatabaseModule from "./common/database.module";
           cli: {
             migrationDir: 'src/common/migrations/*.ts'
           }
+          , logging: true
         };
 
       },

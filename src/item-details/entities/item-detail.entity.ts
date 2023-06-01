@@ -11,6 +11,12 @@ export class ItemDetail {
     @Column({ nullable: false })
     value: string;
 
+    @Column({ nullable: false })
+    item_id: number;
+ 
+    @Column({ nullable: false })
+    dynamic_id: number;
+
     @Column({ default: false })
     is_deleted: boolean;
 
@@ -36,9 +42,9 @@ export class ItemDetail {
     // @JoinTable()
     // dynamic_col_id: DynamicColumn;
 
-    @ManyToOne(() => Item, (items) => items.item_id)
-    @JoinTable({ name: 'item_id' })
-    item : Item;
+    // @ManyToOne(() => Item, (items) => items.item_id)
+    // @JoinTable({ name: 'item_id' })
+    // item : Item;
 
 }
 

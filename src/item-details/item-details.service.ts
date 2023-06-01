@@ -41,13 +41,18 @@ export class ItemDetailsService {
 
     //   Object.assign(newData, { item_id: itemData })
     // }
+    let data;
+    try {
 
-    const data = await this.repo.save({
-      //   value: createItemDetailDto.value,
-      //...newData,
-      ...createItemDetailDto,
-      created_at: unixTimestamp().toString(),
-    });
+      data = await this.repo.save({
+        value: createItemDetailDto.value,
+        item_id: +createItemDetailDto.item_id,
+        dynamic_id: +createItemDetailDto.dynamic_id,
+        created_at: unixTimestamp().toString(),
+      });
+    } catch (error) {
+      console.log('error', error)
+    }
     return data;
   }
 

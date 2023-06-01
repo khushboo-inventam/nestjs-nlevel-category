@@ -1,38 +1,35 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from "typeorm"
+import { MigrationInterface, QueryRunner, Table } from "typeorm"
 
-export class ItemDetails1685509350372 implements MigrationInterface {
+export class DynamicCol1685595522220 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: "item_details",
+                name: "dynamic_column",
                 columns: [
                     {
-                        name: "item_detail_id",
+                        name: "dynamic_id",
                         type: "integer",
                         isPrimary: true,
                         isNullable: false,
                         isGenerated: true,
                         generationStrategy: "increment"
-
                     },
                     {
-                        name: "value",
+                        name: "name",
                         type: "varchar",
                         length: "255",
                         isUnique: true,
                         isNullable: false,
                     },
                     {
-                        name: "item_id",
-                        type: "integer",
+                        name: "type",
+                        type: "varchar",
+                        length: "255",
                         isNullable: false,
                     },
-                    {
-                        name: "dynamic_id",
-                        type: "integer",
-                        isNullable: false,
-                    },
+                     
+
                     {
                         name: "is_deleted",
                         type: "boolean",
@@ -79,30 +76,13 @@ export class ItemDetails1685509350372 implements MigrationInterface {
                         isNullable: true,
                     },
                 ],
-            }));
-
-        // await queryRunner.addColumn(
-        //     "item_details",
-        //     new TableColumn({
-        //         name: "item_id",
-        //         type: "integer",
-        //     }),
-        // ),
-
-        //     await queryRunner.createForeignKey(
-        //         "item_details",
-        //         new TableForeignKey({
-        //             columnNames: ["item_id"],
-        //             referencedColumnNames: ["item_id"],
-        //             referencedTableName: "item",
-        //         })
-        //     )
-
-
+            }),
+            true
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("item_details", true);
+        await queryRunner.dropTable("dynamic_column", true);
     }
 
 }

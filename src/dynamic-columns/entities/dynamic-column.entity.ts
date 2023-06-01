@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typ
 
 @Entity({ name: "dynamic_column" })
 export class DynamicColumn {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     dynamic_id: number;
 
     @Column({ nullable: false })
@@ -15,13 +15,13 @@ export class DynamicColumn {
     @Column({ default: false })
     is_deleted: boolean;
 
-    @Column({ nullable: true, type: "uuid" })
+    @Column({ nullable: true})
     created_by: string;
 
-    @Column({ nullable: true, type: "uuid" })
+    @Column({ nullable: true})
     updated_by: string;
 
-    @Column({ nullable: true, type: "uuid" })
+    @Column({ nullable: true})
     deleted_by: string;
 
     @Column({ nullable: true })
