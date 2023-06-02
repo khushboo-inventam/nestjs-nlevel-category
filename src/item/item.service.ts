@@ -45,14 +45,14 @@ export class ItemService {
     let retdata
     try {
 
-      let itemDetailData: any = await this.itemDetail.createQueryBuilder("id")
-        .select(['id.item_id', 'id.value', 'col.name as key'])
-        .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = id.dynamic_id")
-        
-      console.log('itemDetailData', itemDetailData)
+      // let itemDetailData: any = await this.itemDetail.createQueryBuilder("id")
+      //   .select(['id.item_id', 'id.value', 'col.name as key'])
+      //   .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = id.dynamic_id")
 
-       retdata = await itemDetailData.leftJoinAndSelect('item', "i", "i.item_id=id.item_id").getRawMany()
-      console.log('retdata------>',retdata)
+      // console.log('itemDetailData', itemDetailData)
+
+      //  retdata = await itemDetailData.leftJoinAndSelect('item', "i", "i.item_id=id.item_id").getRawMany()
+      // console.log('retdata------>',retdata)
       //.JoinAndSelect(DynamicColumn, "col", "col.dynamic_id = id.dynamic_id")
 
       // data = await this.repo.createQueryBuilder("item")
@@ -60,36 +60,32 @@ export class ItemService {
       //   .leftJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = itemd.dynamic_id")
       //   .select(['item.item_id', 'item.name', 'itemd.value', 'col.name as dy_col'])
       //   .getRawMany()
-      // data =  await this.repo.createQueryBuilder("item")
-     
-      // .getRawMany()
+
+      data = await this.repo.createQueryBuilder("item")
+        .select(
+          ['item.item_id', 'item.name']
+        )
+        .addSelect(subQry => subQry.select(['id.item_id', 'id.value', 'col.name as key']).from(ItemDetail, 'id')
+          .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = id.dynamic_id")
+          .where('id.item_id =item.item_id ')
+
+        )
+        .getRawMany()
     } catch (error) {
       console.log('error', error)
     }
 
 
-    // console.log('data', data)
+    // const group = {};
+
+    // // data.forEach(({ item_name, ...rest }) => {
+    // //   group[item_name] = group[item_name] || { item_name, item_data: [] };
+    // //   group[item_name].item_data.push(rest)
+    // // })
 
 
-    const group = {};
-    // Promise.all(
-
-    //   data.map(({ item_name, ...rest }) => {
-    //     console.log('   item_name ', item_name)
-    //     group[item_name] = group[item_name] || { item_name, details: [] };
-    //     console.log('   group[item_name] ', group[item_name])
-    //     group[item_name].details.push(rest)
-    //     return group
-    //   })
-    // )
-    // data.forEach(({ item_name, ...rest }) => {
-    //   group[item_name] = group[item_name] || { item_name, item_data: [] };
-    //   group[item_name].item_data.push(rest)
-    // })
-
-
-    console.log(Object.values(group))
-    return retdata;
+    // console.log(Object.values(group))
+    return data;
   }
 
   findOne(id: number) {
