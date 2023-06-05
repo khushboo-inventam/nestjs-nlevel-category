@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, ILike, Repository, } from 'typeorm';
 import { Item } from './entities/item.entity';
 import { setPagination, unixTimestamp } from '../common/pagination';
-import { ItemDetail } from 'src/item-details/entities/item-detail.entity';
-import { DynamicColumn } from 'src/dynamic-columns/entities/dynamic-column.entity';
+import { ItemDetail } from '../item-details/entities/item-detail.entity';
+import { DynamicColumn } from '../dynamic-columns/entities/dynamic-column.entity';
 
 @Injectable()
 export class ItemService {

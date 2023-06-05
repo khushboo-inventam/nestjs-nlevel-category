@@ -1,33 +1,31 @@
 import {
   Column,
   Entity,
-  EntitySchema,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
+ 
   PrimaryGeneratedColumn,
 } from "typeorm";
 
 @Entity({ name: "category" })
 export class Category {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   category_id: number;
 
   @Column()
   name: string;
 
+  @Column()
+  parent_category_id: number;
+
   @Column({ default: false })
   is_deleted: boolean;
 
-  @Column({ nullable: true, type: "uuid" })
+  @Column({ nullable: true })
   created_by: string;
 
-  @Column({ nullable: true, type: "uuid" })
+  @Column({ nullable: true })
   updated_by: string;
 
-  @Column({ nullable: true, type: "uuid" })
+  @Column({ nullable: true })
   deleted_by: string;
 
   @Column({ nullable: true })
@@ -39,9 +37,5 @@ export class Category {
   @Column({ nullable: true })
   deleted_at: string;
 
-  //   @Column({nullable: true})
-  //   parent_category_id: number;
-  @ManyToMany(() => Category)
-  @JoinTable()
-  parent_category_id: Category[];
+
 }

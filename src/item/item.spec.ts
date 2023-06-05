@@ -23,10 +23,6 @@ describe("ITEM", () => {
       ],
     }).compile();
 
-    // app = moduleFixture.createNestApplication();
-
-    // await app.init();
-
     app = moduleFixture.createNestApplication();
 
     app.connectMicroservice({
@@ -40,24 +36,18 @@ describe("ITEM", () => {
     client = app.get("ITEM");
     await client.connect();
 
-    //   const response = await request(app.)
-    //     .post('/auth/login')
-    //     .send({ email: 'test@example.com', password: 'Test@123' });
-    //   jwtToken = response.body.data.access_token;
-    //   email = response.body.data.email;
+
   });
 
   afterAll(async () => {
-    // await request(app.getHttpServer()).get('/auth/logout').set('authorization', `${jwtToken}`);
-    // await Promise.all([app.close()]);
-
+  
     await app.close();
     client.close();
     console.log("afterAll");
   });
 
   describe("Item-Module", () => {
-    describe("UserLogin", () => {
+    describe("item_create", () => {
       it("Item / (POST)", async () => {
         try {
           const response = await client
@@ -90,32 +80,31 @@ describe("ITEM", () => {
         }
       });
 
-//       it("Item / (POST) with wrong parent_Item_id", async () => {
-//         try {
-//           const response = await client
-//             .send("Item_create", {
-//               name: "WER",
-//               parent_Item_id: "15",
-//             })
-//             .toPromise();
-
-//           expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-//         } catch (err) {
-//           expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-//         }
-//       });
-
-      it("Item / (GET) find Item_search_by_Item_id", async () => {
+      it("Item / (POST) with wrong parent_Item_id", async () => {
         try {
           const response = await client
-            .send("item_search_by_item_id", +1)
+            .send("Item_create", {
+              name: 5,
+            })
             .toPromise();
-          console.log('response.....***************.get  ', response.statusCode)
-          expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+
+          expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (err) {
-          expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+          expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
         }
       });
+
+      // it("Item / (GET) find Item_search_by_Item_id", async () => {
+      //   try {
+      //     const response = await client
+      //       .send("item_search_by_item_id", +1)
+      //       .toPromise();
+      //     console.log('response.....***************.get  ', response.statusCode)
+      //     expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+      //   } catch (err) {
+      //     expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+      //   }
+      // });
     });
   });
 

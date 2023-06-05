@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 // import { Repository } from 'typeorm';
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
@@ -7,101 +7,54 @@ import { setPagination, unixTimestamp } from "../common/pagination";
 import { Category } from "./entities/category.entity";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { CreateCategoryDto } from "./dto/create-category.dto";
+import { IResponse } from "src/common/response.interface";
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category) private readonly repo: Repository<Category>
-  ) {}
+  ) { }
 
   async create(createCategoryDto: CreateCategoryDto) {
-    let parentId = 0;
-    let parentData = [];
-    let parentRelation = {};
-    if (
-      typeof createCategoryDto === "object" &&
-      "parent_category_id" in createCategoryDto
-    ) {
-      parentId = +createCategoryDto.parent_category_id;
-      console.log("this.repo", this.repo);
-      parentData = await this.repo.find({
-        where: { category_id: +createCategoryDto.parent_category_id },
-      });
-      parentRelation = { parent_category_id: parentData };
+    let result: IResponse;
+    if (createCategoryDto.parent_category_id > 0) {
+      const parentExist = await this.findOne(+createCategoryDto.parent_category_id)
+      if (!parentExist && parentExist !== undefined) {
+        result = {
+          status: HttpStatus.NOT_FOUND,
+          message: 'parent_id_not_found',
+          errors: null,
+        };
+      }
     }
-    console.log("parentData", parentData);
+
     const data = await this.repo.save({
-      name: createCategoryDto.name,
-      ...parentRelation,
+      ...createCategoryDto,
       created_at: unixTimestamp().toString(),
     });
     return data;
   }
 
   async findAll(params) {
-    console.log("params.query", params);
-    const pagination = setPagination(params);
-    const whereCondition =  {is_deleted : false };
-    if (params?.search) {
-      Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
-    }
-    console.log("whereCondition", whereCondition);
-
-    //     const QBData = await this.repo.createQueryBuilder("category").
-    //     leftJoinAndSelect("category", "subCat", "subCat.category_id = category.parent_category_id")
-    //     .getMany()
-    const data = await this.repo.find({
-      select: {
-        name: true,
-        category_id: true,
-        parent_category_id: true,
-      },
-      //       relations: {parent_category_id : true}
-      join: {
-        //         parent_category_id: true,
-
-        alias: "category",
-
-        leftJoinAndSelect: {
-          category_parent_category_id_category: "category.parent_category_id",
-        },
-      },
-      where: {
-        parent_category_id: true,
-        ...whereCondition,
-      },
-      ...pagination,
-    });
+    let data = await this.repo.createQueryBuilder("category")
+      .leftJoinAndSelect(Category, "pCat", "pCat.parent_category_id = category.category_id")
+      .getRawMany()
     return data;
   }
 
   findOne(id: number) {
     return this.repo.findOne({
-      relations: { parent_category_id: true },
+
       where: { category_id: id },
     });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    let parentId = 0;
-    let parentData = [];
-    let parentRelation = {};
-    if (
-      typeof updateCategoryDto === "object" &&
-      "parent_category_id" in updateCategoryDto
-    ) {
-      parentId = +updateCategoryDto.parent_category_id;
-      console.log("this.repo", this.repo);
-      parentData = await this.repo.find({
-        where: { category_id: +updateCategoryDto.parent_category_id },
-      });
-      parentRelation = { parent_category_id: parentData };
-    }
+
     return this.repo.update(
       { category_id: id },
       {
-        name: updateCategoryDto.name,
-        ...parentRelation,
+        ...updateCategoryDto,
         updated_at: unixTimestamp().toString(),
       }
     );

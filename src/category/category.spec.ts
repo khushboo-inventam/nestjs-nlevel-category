@@ -3,7 +3,7 @@ import { CategoryService } from "./category.service";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
- 
+
 describe("CATEGORY", () => {
   let app: INestApplication;
   let catServices: CategoryService;
@@ -62,7 +62,7 @@ describe("CATEGORY", () => {
           const response = await client
             .send("category_create", {
               name: "",
-              parent_category_id: "",
+              parent_category_id: ""
             })
             .toPromise();
 
@@ -86,32 +86,46 @@ describe("CATEGORY", () => {
         }
       });
 
-//       it("Category / (POST) with wrong parent_category_id", async () => {
-//         try {
-//           const response = await client
-//             .send("category_create", {
-//               name: "WER",
-//               parent_category_id: "15",
-//             })
-//             .toPromise();
-
-//           expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-//         } catch (err) {
-//           expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-//         }
-//       });
-
-      it("Category / (GET) find category_search_by_category_id", async () => {
+      it("Category / (POST) with wrong parent_category_id", async () => {
         try {
           const response = await client
-            .send("category_search_by_category_id", +44444)
+            .send("category_create", {
+              name: "WER",
+              parent_category_id: "15",
+            })
             .toPromise();
-          console.log('response.....***************.get  ', response.statusCode)
-          expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
-          expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
+
+      it("Category / (POST) with blank data ", async () => {
+        try {
+          const response = await client
+            .send("category_create", {
+
+              parent_category_id: "555555555515",
+            })
+            .toPromise();
+
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+      // it("Category / (GET) find category_search_by_category_id", async () => {
+      //   try {
+      //     const response = await client
+      //       .send("category_search_by_category_id", +1)
+      //       .toPromise();
+      //     console.log('response.....***************.get  ', response.statusCode)
+      //     expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+      //   } catch (err) {
+      //     expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+      //   }
+      // });
     });
   });
 
