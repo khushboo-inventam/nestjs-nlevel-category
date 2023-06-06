@@ -7,12 +7,14 @@ import { ILike, Repository } from 'typeorm';
 import { setPagination, unixTimestamp } from '../common/pagination';
 import { ItemService } from '../item/item.service';
 import { DynamicColumnsService } from '../dynamic-columns/dynamic-columns.service';
+import { Item } from 'src/item/entities/item.entity';
 
 @Injectable()
 export class ItemDetailsService {
 
   constructor(
     @InjectRepository(ItemDetail) private readonly repo: Repository<ItemDetail>,
+    @InjectRepository(Item) private readonly itemRepo: Repository<Item>,
     @Inject(forwardRef(() => ItemService))
     private itemService: ItemService,
     @Inject(forwardRef(() => DynamicColumnsService))
@@ -22,7 +24,7 @@ export class ItemDetailsService {
   async create(createItemDetailDto: CreateItemDetailDto) {
 
 
-    // let newData = {}
+    let newData = {}
 
     // if (
     //   typeof createItemDetailDto === "object" &&
@@ -46,6 +48,7 @@ export class ItemDetailsService {
 
       data = await this.repo.save({
         value: createItemDetailDto.value,
+        // ...newData,
         item_id: +createItemDetailDto.item_id,
         dynamic_id: +createItemDetailDto.dynamic_id,
         created_at: unixTimestamp().toString(),
@@ -66,28 +69,34 @@ export class ItemDetailsService {
     }
     let data;
     try {
-      data = await this.repo.find({
-        select: {
-          item_detail_id: true,
-          value: true,
-        },
+      // data = await this.repo.find({
+      //   select: {
+      //     item_detail_id: true,
+      //     value: true,
+      //   },
 
-        join: {
-          alias: "itemdetail",
-          leftJoinAndSelect: {
-            //dynamic_id: "itemdetail.dynamic_id",
-            item_id: "itemdetail.item_id",
-          },
-        },
+      //   join: {
+      //     alias: "itemdetail",
+      //     leftJoinAndSelect: {
+      //       //dynamic_id: "itemdetail.dynamic_id",
+      //       item_id: "itemdetail.item_id",
+      //     },
+      //   },
 
-        where: {
-          //dynamic_id: true,
-          // item_id: true,
+      //   where: {
+      //     //dynamic_id: true,
+      //     // item_id: true,
 
-          ...whereCondition,
-        },
-        // ...pagination,
-      });
+      //     ...whereCondition,
+      //   },
+      //   // ...pagination,
+      // });
+      data = await this.repo.createQueryBuilder("itemd")
+      // .leftJoinAndSelect(ItemDetail, "item_details", "item_details.item_id = item.item_id")
+        .leftJoinAndMapMany('item.itemdetail',Item,"items", "itemd.item_id = items.item_id")
+        .select(['itemd.item_detail_id','itemd.value','itemd.item_id'])
+        .addSelect(['items.name'])
+        .getMany()
     } catch (error) {
       console.log('error', error)
     }

@@ -7,15 +7,15 @@ import { AllExceptionsFilter } from '../common/all-exceptions.filter';
 import { ApiTags } from '@nestjs/swagger';
 import { MessagePattern } from '@nestjs/microservices';
 
-@UseFilters(new AllExceptionsFilter())
-@UsePipes(new ValidationPipe({ transform: true }))
+// @UseFilters(new AllExceptionsFilter())
+// @UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("item")
 @Controller('item')
 export class ItemController {
   constructor(private readonly itemService: ItemService) { }
 
-  @MessagePattern("item_create")
-  //  @Post()
+  // @MessagePattern("item_create")
+  @Post()
   create(@Body() createItemDto: CreateItemDto) {
     return this.itemService.create(createItemDto);
   }

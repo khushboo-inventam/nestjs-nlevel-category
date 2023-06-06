@@ -44,7 +44,7 @@ export class ItemDetail {
 
     // @ManyToOne(() => Item, (items) => items.item_id)
     // @JoinTable({ name: 'item_id' })
-    // item : Item;
+    // item_id : Item;
 
 }
 
