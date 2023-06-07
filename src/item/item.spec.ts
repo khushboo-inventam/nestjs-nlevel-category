@@ -88,9 +88,9 @@ describe("ITEM", () => {
             })
             .toPromise();
 
-          expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
-          expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
 

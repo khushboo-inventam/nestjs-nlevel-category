@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreateItemDetailDto } from './dto/create-item-detail.dto';
 import { UpdateItemDetailDto } from './dto/update-item-detail.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,7 +7,7 @@ import { ILike, Repository } from 'typeorm';
 import { setPagination, unixTimestamp } from '../common/pagination';
 import { ItemService } from '../item/item.service';
 import { DynamicColumnsService } from '../dynamic-columns/dynamic-columns.service';
-import { Item } from 'src/item/entities/item.entity';
+import { Item } from '../item/entities/item.entity';
 
 @Injectable()
 export class ItemDetailsService {
@@ -26,23 +26,26 @@ export class ItemDetailsService {
 
     let newData = {}
 
-    // if (
-    //   typeof createItemDetailDto === "object" &&
-    //   "dynamic_id" in createItemDetailDto
-    // ) {
-    //   let dynamicData = await this.dynamicColumnsService.findOne(+createItemDetailDto.dynamic_id);
+    if (
+      typeof createItemDetailDto === "object" &&
+      "dynamic_id" in createItemDetailDto
+    ) {
+      let dynamicData = await this.dynamicColumnsService.findOne(+createItemDetailDto.dynamic_id);
 
-    //   Object.assign(newData, { dynamic_id: dynamicData })
-    // }
+      // Object.assign(newData, { dynamic_id: dynamicData })
+      if(!dynamicData || dynamicData === undefined) 
+      throw new HttpException('Dynamic id not found', HttpStatus.NOT_FOUND);
+    }
 
-    // if (
-    //   typeof createItemDetailDto === "object" &&
-    //   "item_id" in createItemDetailDto
-    // ) {
-    //   let itemData = await this.itemService.findOne(+createItemDetailDto.item_id);
-
-    //   Object.assign(newData, { item_id: itemData })
-    // }
+    if (
+      typeof createItemDetailDto === "object" &&
+      "item_id" in createItemDetailDto
+    ) {
+      let itemData = await this.itemService.findOne(+createItemDetailDto.item_id);
+      if(!itemData || itemData === undefined) 
+      throw new HttpException('Item id not found', HttpStatus.NOT_FOUND);
+      // Object.assign(newData, { item_id: itemData })
+    }
     let data;
     try {
 

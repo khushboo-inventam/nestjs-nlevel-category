@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
+import { unixTimestamp } from "../common/pagination";
 
 describe("DYNAMIC-COL", () => {
   let app: INestApplication;
@@ -66,21 +67,21 @@ describe("DYNAMIC-COL", () => {
 
       it("Dynamic-col / (POST) without key", async () => {
         try {
-          const response = await client.send("dynamic_col_create", {}).toPromise();
-
-          // console.log('response', response, typeof response)
+          const response = await client.send("dynamic_col_create", {}).toPromise()
+          console.log('response', response, typeof response)
           expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
-          // console.log('err', err, typeof err)
+          console.log('err', err, typeof err)
           expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
 
-      it("Dynamic-col / (POST) with wrong parent_Item_id", async () => {
+      it("Dynamic-col / (POST) with wrong value passed in name", async () => {
         try {
           const response = await client
             .send("dynamic_col_create", {
               name: 5,
+              created_at: unixTimestamp().toString(),
             })
             .toPromise();
 

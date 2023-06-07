@@ -46,17 +46,16 @@ describe("ITEM-DETAILS", () => {
     console.log("afterAll");
   });
 
-  describe("Item-Module", () => {
+  describe("Item-detail-Module", () => {
     describe("item_create", () => {
-      it("Item / (POST)", async () => {
+      it("Item-detail / (POST)", async () => {
         try {
           const response = await client
-            .send("item_create", {
-              name: "",
-              item_description: "",
-              image: "",
-              item_code: "",
-
+            .send("item-details_create", {
+              value: "",
+              dynamic_id: "",
+              item_id: "",
+              
             })
             .toPromise();
 
@@ -68,7 +67,7 @@ describe("ITEM-DETAILS", () => {
         }
       });
 
-      it("Item / (POST) without key", async () => {
+      it("Item-detail / (POST) without key", async () => {
         try {
           const response = await client.send("item_create", {}).toPromise();
 
@@ -80,11 +79,13 @@ describe("ITEM-DETAILS", () => {
         }
       });
 
-      it("Item / (POST) with wrong parent_Item_id", async () => {
+      it("Item-detail / (POST) with wrong dynamic_id", async () => {
         try {
           const response = await client
             .send("Item_create", {
-              name: 5,
+              value: "jhsdgf",
+              dynamic_id: 111111111,
+              item_id: 1
             })
             .toPromise();
 
@@ -94,17 +95,48 @@ describe("ITEM-DETAILS", () => {
         }
       });
 
-      // it("Item / (GET) find Item_search_by_Item_id", async () => {
-      //   try {
-      //     const response = await client
-      //       .send("item_search_by_item_id", +1)
-      //       .toPromise();
-      //     console.log('response.....***************.get  ', response.statusCode)
-      //     expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
-      //   } catch (err) {
-      //     expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
-      //   }
-      // });
+      it("Item-detail / (POST) with wrong item_id", async () => {
+        try {
+          const response = await client
+            .send("Item_create", {
+              value: "jhsdgf",
+              item_id: 111111111,
+              dynamic_id: 1,
+            })
+            .toPromise();
+
+          expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+      });
+      it("Item-detail / (POST) with wrong value", async () => {
+        try {
+          const response = await client
+            .send("Item_create", {
+              value: 666,
+              dynamic_id:1,
+              item_id:1
+            })
+            .toPromise();
+
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it("Item / (GET) find Item_search_by_Item_id", async () => {
+        try {
+          const response = await client
+            .send("item_search_by_item_id", +1)
+            .toPromise();
+          console.log('response.....***************.get  ', response.statusCode)
+          expect(response.statusCode).toBe(HttpStatus.OK);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.OK);
+        }
+      });
     });
   });
 

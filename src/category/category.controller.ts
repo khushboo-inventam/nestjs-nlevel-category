@@ -19,7 +19,7 @@ import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { AllExceptionsFilter } from "../common/all-exceptions.filter";
-import { IResponse } from "src/common/response.interface";
+import { IResponse } from "../common/response.interface";
 
 @UseFilters(new AllExceptionsFilter())
 @UsePipes(new ValidationPipe({ transform: true }))
