@@ -15,14 +15,14 @@ import { MessagePattern } from '@nestjs/microservices';
 export class ItemDetailsController {
   constructor(private readonly itemDetailsService: ItemDetailsService) { }
 
-  @MessagePattern("item-details_create")
-  // @Post()
+  // @MessagePattern("item-details_create")
+  @Post()
   create(@Body() createItemDetailDto: CreateItemDetailDto) {
     return this.itemDetailsService.create(createItemDetailDto);
   }
 
-  @MessagePattern("item-details_search_by_name")
-  // @Get()                                
+  // @MessagePattern("item-details_search_by_name")
+  @Get()                                
   findAll(@Query() params?: SearchTracksDto) {
     return this.itemDetailsService.findAll(params);
 
@@ -34,14 +34,14 @@ export class ItemDetailsController {
     return this.itemDetailsService.findOne(+id);
   }
 
-  // @Patch(':id')
-  @MessagePattern("item-details_update_item-details_by_id")
+  @Patch(':id')
+  // @MessagePattern("item-details_update_item-details_by_id")
   update(@Param('id') id: string, @Body() updateItemDetailDto: UpdateItemDetailDto) {
     return this.itemDetailsService.update(+id, updateItemDetailDto);
   }
 
-  // @Delete(':id')
-  @MessagePattern("item-details_delete_by_item-details_id")
+  @Delete(':id')
+  // @MessagePattern("item-details_delete_by_item-details_id")
   remove(@Param('id') id: string) {
     return this.itemDetailsService.remove(+id);
   }

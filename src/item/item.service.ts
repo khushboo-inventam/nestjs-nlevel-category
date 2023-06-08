@@ -41,10 +41,10 @@ export class ItemService {
       Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
     }
 
-    let data 
+    let data
 
 
-  
+
 
     let retdata
     try {
@@ -54,7 +54,7 @@ export class ItemService {
       //     item_id: true,
       //     name: true,
       //   },
-  
+
       //   join: {
       //     alias: "item",
       //     leftJoinAndSelect: {
@@ -65,7 +65,7 @@ export class ItemService {
       //   where: {
       //     //dynamic_id: true,
       //     // item_id: true,
-  
+
       //     ...whereCondition,
       //   },
       //   // ...pagination,
@@ -75,24 +75,36 @@ export class ItemService {
       //   .select(['id.item_id', 'id.value', 'col.name as key'])
       //   .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = id.dynamic_id")
       //   .getMany()
-   //   console.log('itemDetailData', itemDetailData)
+      //   console.log('itemDetailData', itemDetailData)
 
       //  retdata = await itemDetailData.leftJoinAndSelect('item', "i", "i.item_id=id.item_id").getRawMany()
       // console.log('retdata------>',retdata)
       //.JoinAndSelect(DynamicColumn, "col", "col.dynamic_id = id.dynamic_id")
 
-      data = await this.repo.createQueryBuilder("item")
-      // .leftJoinAndSelect(ItemDetail, "item_details", "item_details.item_id = item.item_id")
-        .leftJoinAndMapMany('item.itemd',ItemDetail,"itemd", "itemd.item_id = item.item_id")
-        // .leftJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = itemd.dynamic_id")
-        .innerJoinAndMapOne('itemd.col',DynamicColumn,"col", "itemd.dynamic_id = col.dynamic_id")
+      // data = await this.repo.createQueryBuilder("item")
+      // // .leftJoinAndSelect(ItemDetail, "item_details", "item_details.item_id = item.item_id")
+      //   .leftJoinAndMapMany('item.itemd',ItemDetail,"itemd", "itemd.item_id = item.item_id")
+      //   // .leftJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = itemd.dynamic_id")
+      //   .innerJoinAndMapOne('itemd.col',DynamicColumn,"col", "itemd.dynamic_id = col.dynamic_id")
+      //   .select(['item.item_id', 'item.name'])
+      //   .addSelect([
+      //     'itemd.item_id',
+      //     'itemd.value',
+      //     'col.name'
+      //   ])
+      //   .getRawMany()
+
+      data = this.repo.createQueryBuilder("item")
+        .leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })
+        //  .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = ItemDetail.dynamic_id")
+        .innerJoinAndMapOne('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
         .select(['item.item_id', 'item.name'])
         .addSelect([
-          'itemd.item_id',
-          'itemd.value',
-          'col.name'
+          'ItemDetail.value',
+          'dynamicCol.name',
         ])
-        .getRawMany()
+        .getMany();
+
 
       // data = await this.repo.createQueryBuilder("item")
       //   .select(
@@ -105,7 +117,7 @@ export class ItemService {
       //   )
       //   .getRawMany()
 
-    
+
     } catch (error) {
       console.log('error', error)
     }

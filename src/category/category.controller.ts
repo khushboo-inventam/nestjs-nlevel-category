@@ -21,28 +21,28 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { AllExceptionsFilter } from "../common/all-exceptions.filter";
 import { IResponse } from "../common/response.interface";
 
-@UseFilters(new AllExceptionsFilter())
-@UsePipes(new ValidationPipe({ transform: true }))
+// @UseFilters(new AllExceptionsFilter())
+// @UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("category")
 @Controller("category")
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
 
-  //@Post()
-  @MessagePattern("category_create")
+  @Post()
+  // @MessagePattern("category_create")
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
 
-  //@Get()
-  @MessagePattern("category_search_by_name")
+  @Get()
+  // @MessagePattern("category_search_by_name")
   findAll(@Query() params?: SearchTracksDto) {
     console.log("params", params);
     return this.categoryService.findAll(params);
   }
 
-  // @Get(":id") 
-  @MessagePattern("category_search_by_category_id")
+  @Get(":id") 
+  // @MessagePattern("category_search_by_category_id")
   async findOne(@Param("id") id: string) {
     const catData = await this.categoryService.findOne(+id);
     let result: IResponse;
@@ -58,8 +58,8 @@ export class CategoryController {
     return catData
   }
 
-  //@Patch(":id")
-  @MessagePattern("category_update_category_by_id")
+  @Patch(":id")
+  // @MessagePattern("category_update_category_by_id")
   update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto
@@ -67,8 +67,8 @@ export class CategoryController {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
-  @MessagePattern("category_delete_by_category_id")
-  // @Delete(":id")
+  // @MessagePattern("category_delete_by_category_id")
+  @Delete(":id")
   remove(@Param("id") id: string) {
     return this.categoryService.remove(+id);
   }
