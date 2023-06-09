@@ -7,22 +7,22 @@ import {
   Param,
   Delete,
   Query,
-  UseFilters,
-  UsePipes,
-  ValidationPipe,
   HttpStatus,
+  UseFilters,
+  ValidationPipe,
+  UsePipes,
+  HttpException,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SearchTracksDto } from "../common/SearchTracksDto.dto";
-import { MessagePattern } from "@nestjs/microservices";
 import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { AllExceptionsFilter } from "../common/all-exceptions.filter";
 import { IResponse } from "../common/response.interface";
+import { AllExceptionsFilter } from "src/common/all-exceptions.filter";
 
-// @UseFilters(new AllExceptionsFilter())
-// @UsePipes(new ValidationPipe({ transform: true }))
+@UseFilters(new AllExceptionsFilter())
+@UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("category")
 @Controller("category")
 export class CategoryController {
@@ -41,18 +41,14 @@ export class CategoryController {
     return this.categoryService.findAll(params);
   }
 
-  @Get(":id") 
+  @Get(":id")
   // @MessagePattern("category_search_by_category_id")
   async findOne(@Param("id") id: string) {
     const catData = await this.categoryService.findOne(+id);
     let result: IResponse;
 
-    if (!catData && catData !== undefined) {
-      result = {
-        status: HttpStatus.NOT_FOUND,
-        message: 'category_not_found',
-        errors: null,
-      };
+    if (!catData || catData !== undefined) {
+      throw new HttpException('Dynamic id not found', HttpStatus.NOT_FOUND);
 
     }
     return catData

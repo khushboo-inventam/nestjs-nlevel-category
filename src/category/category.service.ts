@@ -38,6 +38,16 @@ export class CategoryService {
   }
 
   async findAll(params) {
+   
+    let sortColumns = {};
+    let searchData = ""
+    if (!params?.sort_column) sortColumns = { sort_column: 'cat.created_at' }
+    if (params?.search) {
+      searchData = "and ( cat.name ilike :name or pCat.name ilike :name)"
+    }
+    let pagination = setPagination(Object.assign(params, sortColumns));
+
+    
     let data = await this.repo
       .createQueryBuilder("cat")
       .leftJoinAndMapMany(
@@ -50,8 +60,14 @@ export class CategoryService {
       //  .leftJoinAndSelect(Category, "pCat", "pCat.parent_category_id = cat.category_id")
       .select(["cat.category_id", "cat.name", "cat.parent_category_id"])
       .addSelect(["pCat.category_id", "pCat.name"])
-      .where("cat.parent_category_id = :id", { id: 0 })
-      .getMany();
+      .where(`cat.parent_category_id = :id ${searchData}`, { id: 0, name: `%${params?.search}%` })
+
+      //.orderBy(pagination.order)
+      .take(pagination.take)
+      .skip(pagination.skip)
+      .getMany()
+
+      ;
     return data;
   }
 
@@ -68,7 +84,7 @@ export class CategoryService {
         "pCat.parent_category_id = cat.category_id and pCat.is_deleted = :isDelete",
         { isDelete: false }
       )
-      
+
       .select(["cat.category_id", "cat.name", "cat.parent_category_id"])
       .addSelect(["pCat.category_id", "pCat.name"])
       .where("cat.parent_category_id = :parentId and cat.category_id = :id ", { parentId: 0, id })

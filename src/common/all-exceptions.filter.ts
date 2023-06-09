@@ -14,6 +14,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const errorMessage = typeof tempError === 'object' ? tempError.message : tempError;
     // const errorStack = typeof error === 'object' ? error.stack : null;
 
+    console.log('status',status)
+    console.log('errorMessage',errorMessage)
     return throwError(() => ({
         statusCode: status,
         message: errorMessage,
