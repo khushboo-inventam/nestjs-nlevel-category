@@ -8,7 +8,7 @@ import { DynamicColumnsService } from '../dynamic-columns/dynamic-columns.servic
 import { Item } from '../item/entities/item.entity';
 import { DynamicColumn } from '../dynamic-columns/entities/dynamic-column.entity';
 import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionsFilter } from 'src/common/all-exceptions.filter';
+import { AllExceptionsFilter } from '../common/all-exceptions.filter';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ItemDetail]), TypeOrmModule.forFeature([Item]), TypeOrmModule.forFeature([DynamicColumn])],

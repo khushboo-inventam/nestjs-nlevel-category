@@ -106,7 +106,7 @@ describe("CATEGORY", () => {
           const response = await client
             .send("category_create", {
 
-              parent_category_id: "555555555515",
+              parent_category_id: "55",
             })
             .toPromise();
 
@@ -115,17 +115,42 @@ describe("CATEGORY", () => {
           expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
-      // it("Category / (GET) find category_search_by_category_id", async () => {
-      //   try {
-      //     const response = await client
-      //       .send("category_search_by_category_id", +1)
-      //       .toPromise();
-      //     console.log('response.....***************.get  ', response.statusCode)
-      //     expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
-      //   } catch (err) {
-      //     expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
-      //   }
-      // });
+      it("Category / (GET) find category_search_by_category_id", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id", +1555)
+            .toPromise();
+          console.log('response.....***************.get  ', response.statusCode)
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      it("Category / (GET) find category_search_by_category_id with blank id ", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id","")
+            .toPromise();
+          console.log('response.....***************.get  ', response.statusCode)
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+
+      it("Category / (GET) find category_search_by_category_id with blank id ", async () => {
+        try {
+          const response = await client
+            .send("all category_search_by_category_id","")
+            .toPromise();
+          
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
     });
   });
 

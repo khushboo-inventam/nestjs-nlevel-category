@@ -7,8 +7,8 @@ import { AllExceptionsFilter } from '../common/all-exceptions.filter';
 import { ApiTags } from '@nestjs/swagger';
 import { MessagePattern } from '@nestjs/microservices';
 
-// @UseFilters(new AllExceptionsFilter())
-// @UsePipes(new ValidationPipe({ transform: true }))
+@UseFilters(new AllExceptionsFilter())
+@UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("item")
 @Controller('item')
 export class ItemController {

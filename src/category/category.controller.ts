@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   UsePipes,
   HttpException,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SearchTracksDto } from "../common/SearchTracksDto.dto";
@@ -19,7 +20,10 @@ import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { IResponse } from "../common/response.interface";
-import { AllExceptionsFilter } from "src/common/all-exceptions.filter";
+import { AllExceptionsFilter } from "../common/all-exceptions.filter";
+import { CATEGORY } from "../common/global-constants";
+import { MessageResponse } from "../common/message.dto";
+import { MessagePattern } from "@nestjs/microservices";
 
 @UseFilters(new AllExceptionsFilter())
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -28,44 +32,67 @@ import { AllExceptionsFilter } from "src/common/all-exceptions.filter";
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
 
-  @Post()
-  // @MessagePattern("category_create")
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  // @Post()
+   @MessagePattern("category_create")
+  async create(@Body() createCategoryDto: CreateCategoryDto) {
+    const createData = await this.categoryService.create(createCategoryDto);
+    return {
+      data: createData,
+      message: CATEGORY.UPDATED
+    }
   }
 
-  @Get()
-  // @MessagePattern("category_search_by_name")
-  findAll(@Query() params?: SearchTracksDto) {
-    console.log("params", params);
-    return this.categoryService.findAll(params);
+  // @Get()
+   @MessagePattern("category_search_by_name")
+  async findAll(@Query() params?: SearchTracksDto) {
+    const findAllData = await this.categoryService.findAll(params);
+    return {
+      data: findAllData,
+      message: findAllData && findAllData !== undefined && findAllData.length > 0 ? CATEGORY.FETCHED : CATEGORY.NOT_FOUND
+    }
   }
 
-  @Get(":id")
-  // @MessagePattern("category_search_by_category_id")
-  async findOne(@Param("id") id: string) {
+  // @Get(":id")
+   @MessagePattern("category_search_by_category_id")
+  async findOne(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string) {
     const catData = await this.categoryService.findOne(+id);
     let result: IResponse;
 
-    if (!catData || catData !== undefined) {
-      throw new HttpException('Dynamic id not found', HttpStatus.NOT_FOUND);
-
+    if (catData.length === 0) {
+      throw new HttpException(CATEGORY.NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return catData
+    return {
+      data: catData,
+      message: CATEGORY.FETCHED
+    }
   }
 
-  @Patch(":id")
-  // @MessagePattern("category_update_category_by_id")
-  update(
-    @Param("id") id: string,
+  // @Patch(":id")
+  @MessagePattern("category_update_category_by_id")
+  async update(
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto
   ) {
-    return this.categoryService.update(+id, updateCategoryDto);
+
+    const catData = await this.categoryService.findOne(+id)
+    if (!catData || catData !== undefined) {
+      throw new HttpException(CATEGORY.NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const updateCatData = await this.categoryService.update(+id, updateCategoryDto);
+    return {
+      data: updateCatData,
+      message: CATEGORY.UPDATED
+    }
   }
 
-  // @MessagePattern("category_delete_by_category_id")
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.categoryService.remove(+id);
+  @MessagePattern("category_delete_by_category_id")
+  // @Delete(":id")
+  async remove(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string,): Promise<MessageResponse> {
+    
+    await this.categoryService.remove(+id);
+
+    return {
+      message: CATEGORY.DELETED
+    }
   }
 }

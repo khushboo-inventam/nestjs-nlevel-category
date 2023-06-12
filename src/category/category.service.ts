@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 // import { Repository } from 'typeorm';
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
@@ -7,7 +7,8 @@ import { setPagination, unixTimestamp } from "../common/pagination";
 import { Category } from "./entities/category.entity";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { CreateCategoryDto } from "./dto/create-category.dto";
-import { IResponse } from "src/common/response.interface";
+import { IResponse } from "../common/response.interface";
+import { CATEGORY } from "../common/global-constants";
 
 @Injectable()
 export class CategoryService {
@@ -38,7 +39,7 @@ export class CategoryService {
   }
 
   async findAll(params) {
-   
+
     let sortColumns = {};
     let searchData = ""
     if (!params?.sort_column) sortColumns = { sort_column: 'cat.created_at' }
@@ -47,7 +48,7 @@ export class CategoryService {
     }
     let pagination = setPagination(Object.assign(params, sortColumns));
 
-    
+
     let data = await this.repo
       .createQueryBuilder("cat")
       .leftJoinAndMapMany(
@@ -71,37 +72,42 @@ export class CategoryService {
     return data;
   }
 
-  findOne(id: number) {
-    // return this.repo.findOne({
-    //   where: { category_id: id },
-    // });
-    return this.repo
-      .createQueryBuilder("cat")
-      .leftJoinAndMapMany(
-        "cat.p_details",
-        "category",
-        "pCat",
-        "pCat.parent_category_id = cat.category_id and pCat.is_deleted = :isDelete",
-        { isDelete: false }
-      )
+  async findOne(id) {
 
-      .select(["cat.category_id", "cat.name", "cat.parent_category_id"])
-      .addSelect(["pCat.category_id", "pCat.name"])
-      .where("cat.parent_category_id = :parentId and cat.category_id = :id ", { parentId: 0, id })
-      .getMany();
+    const isParentId = await this.repo.findOne({ where: { parent_category_id: id, is_deleted: false } });
+
+    if (isParentId !== undefined && isParentId !== null) {
+      return this.repo
+        .createQueryBuilder("cat")
+        .leftJoinAndMapMany(
+          "cat.p_details",
+          "category",
+          "pCat",
+          "pCat.parent_category_id = cat.category_id and pCat.is_deleted = :isDelete",
+          { isDelete: false }
+        ).select(["cat.category_id", "cat.name", "cat.parent_category_id"])
+        .addSelect(["pCat.category_id", "pCat.name"])
+        .where("cat.parent_category_id = :parentId and cat.category_id = :id and cat.is_deleted = :isDeleted ", { parentId: 0, id, isDeleted: false })
+        .getMany();
+    }
+    return this.repo.find({ where: { category_id: id, is_deleted: false } })
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return this.repo.update(
-      { category_id: id },
+    return this.repo.save(
       {
+        category_id: id,
         ...updateCategoryDto,
         updated_at: unixTimestamp().toString(),
       }
     );
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const isParentId = await this.repo.find({ where: { parent_category_id: id } });
+    if (isParentId.length !== 0) {
+      throw new HttpException(CATEGORY.NOT_DELETE_PARENT_CATEGORY, HttpStatus.BAD_REQUEST);
+    }
     return this.repo.update(
       { category_id: id },
       { is_deleted: true, deleted_at: unixTimestamp().toString() }

@@ -62,12 +62,13 @@ export class ItemService {
     // console.log('itemDetail', itemDetail  )
     try {
       data = this.repo.createQueryBuilder("item")
-        .leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })
-        //  .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = ItemDetail.dynamic_id")
-        .innerJoinAndMapMany('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
+        .leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })   
+        . innerJoinAndMapOne('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
         .select(['item.item_id', 'item.name'])
         .addSelect([
+          'ItemDetail.item_detail_id',
           'ItemDetail.value',
+          'dynamicCol.dynamic_id',
           'dynamicCol.name',
         ])
         .take(pagination.take)
