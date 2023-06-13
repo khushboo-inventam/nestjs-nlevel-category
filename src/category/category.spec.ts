@@ -135,7 +135,8 @@ describe("CATEGORY", () => {
       });
 
 
-      it("Category / (GET) find all  category_search_by_name ", async () => {
+      it("Category / (GET) find all  category_search_by_name ", async () => 
+      {
         try {
           const response = await client
             .send("category_search_by_name", { limit: '10' })
