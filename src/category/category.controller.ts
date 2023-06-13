@@ -67,17 +67,17 @@ export class CategoryController {
     }
   }
 
-  // @Patch(":id")
+  //  @Patch(":id")
   @MessagePattern("category_update_category_by_id")
   async update(
     @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto
   ) {
 
-    const catData = await this.categoryService.findOne(+id)
-    if (!catData || catData !== undefined) {
-      throw new HttpException(CATEGORY.NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
+    // const catData = await this.categoryService.findOne(+id)
+    // if (!catData || catData !== undefined) {
+    //   throw new HttpException(CATEGORY.NOT_FOUND, HttpStatus.NOT_FOUND);
+    // }
     const updateCatData = await this.categoryService.update(+id, updateCategoryDto);
     return {
       data: updateCatData,
