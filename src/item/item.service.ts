@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Item } from './entities/item.entity';
 import { setPagination, unixTimestamp } from '../common/pagination';
 import { ItemDetail } from '../item-details/entities/item-detail.entity';
 import { DynamicColumn } from '../dynamic-columns/entities/dynamic-column.entity';
+import { ITEM } from '../common/global-constants';
 
 @Injectable()
 export class ItemService {
@@ -43,27 +44,14 @@ export class ItemService {
       searchData = "and ( item.name ilike :name or ItemDetail.value ilike :name or dynamicCol.name ilike :name)"
     }
     let pagination = setPagination(Object.assign(params, sortColumns));
-    let data
+    let data;
 
-  
-    // const itemDetail = await this.itemDetail.createQueryBuilder("ItemDetail")
 
-    //   //.leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })
-    //   //  .innerJoinAndSelect(DynamicColumn, "col", "col.dynamic_id = ItemDetail.dynamic_id")
-    //   .innerJoinAndMapMany('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
-    //   //.select(['item.item_id', 'item.name'])
-    //   .addSelect([
-    //     'ItemDetail.value',
-    //     'dynamicCol.name',
-    //   ])
-    //   .take(pagination.take)
-    //   //  .skip(pagination.skip)
-    //   .getMany();
-    // console.log('itemDetail', itemDetail  )
     try {
       data = this.repo.createQueryBuilder("item")
-        .leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })   
-        . innerJoinAndMapOne('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
+        .where(` item.is_deleted = :isDeleted ${searchData}`, { isDeleted: false, name: `%${params?.search}%` })
+        .leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })
+        .innerJoinAndMapOne('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
         .select(['item.item_id', 'item.name'])
         .addSelect([
           'ItemDetail.item_detail_id',
@@ -99,16 +87,19 @@ export class ItemService {
   }
 
   update(id: number, updateItemDto: UpdateItemDto) {
-    return this.repo.update(
-      { item_id: id },
+    return this.repo.save(
       {
+        item_id: id,
         ...updateItemDto,
         updated_at: unixTimestamp().toString(),
       }
     );
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const checkUsedOrNot = await this.itemDetail.findOne({ where: { is_deleted: false, item_id: id } })
+    if (checkUsedOrNot && checkUsedOrNot !== undefined)
+      throw new HttpException(ITEM.NOT_DELETE_PARENT_ITEM, HttpStatus.NOT_FOUND);
     return this.repo.update(
       { item_id: id },
       { is_deleted: true, deleted_at: unixTimestamp().toString() }

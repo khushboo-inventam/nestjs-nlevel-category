@@ -61,7 +61,7 @@ export class CategoryService {
       //  .leftJoinAndSelect(Category, "pCat", "pCat.parent_category_id = cat.category_id")
       .select(["cat.category_id", "cat.name", "cat.parent_category_id"])
       .addSelect(["pCat.category_id", "pCat.name"])
-      .where(`cat.parent_category_id = :id ${searchData}`, { id: 0, name: `%${params?.search}%` })
+      .where(` cat.is_deleted = :isDeleted and  cat.parent_category_id = :id ${searchData}`, { id: 0, name: `%${params?.search}%`, isDeleted: false  })
 
       //.orderBy(pagination.order)
       .take(pagination.take)

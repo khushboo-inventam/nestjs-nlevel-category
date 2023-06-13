@@ -23,3 +23,23 @@ export const CATEGORY = {
   NOT_DELETE_PARENT_CATEGORY: `Can't delete parent category.`,
 };
 
+export const ITEM = {
+  FETCHED: 'Item has been fetched successfully.',
+  UPDATED: 'Item last active has been updated successfully.',
+  CREATED: 'Item has been added successfully.',
+  DELETED: 'Item has been removed  successfully.',
+  ALREADY_EXIST_ITEM: 'Item already exists .',
+  NOT_FOUND: 'Requested Item not found.',
+  NOT_DELETE_PARENT_ITEM: `Parent item cannot be deleted.`,
+};
+
+
+export const DYNAMIC_COLUMNS = {
+  FETCHED: 'Dynamic-column has been fetched successfully.',
+  UPDATED: 'Dynamic-column last active has been updated successfully.',
+  CREATED: 'Dynamic-column has been added successfully.',
+  DELETED: 'Dynamic-column has been removed  successfully.',
+  ALREADY_EXIST_DYNAMIC_COLUMNS: 'Dynamic-column already exists .',
+  NOT_FOUND: 'Requested Dynamic-column not found.',
+  NOT_DELETE_PARENT_ITEM: `This Dynamic-column cannot be deleted.`,
+};

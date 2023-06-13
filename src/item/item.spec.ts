@@ -80,7 +80,7 @@ describe("ITEM", () => {
         }
       });
 
-      it("Item / (POST) with wrong parent_Item_id", async () => {
+      it("Item / (POST) with wrong value passed in name ", async () => {
         try {
           const response = await client
             .send("Item_create", {
@@ -105,6 +105,32 @@ describe("ITEM", () => {
       //     expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
       //   }
       // });
+
+
+      it("Item / (GET) find Item_search_by_Item_id", async () => {
+        try {
+          const response = await client
+            .send("item_search_by_item_id", +1555)
+            .toPromise(); 
+         
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      it("Item / (GET) find Item_search_by_Item_id with blank id ", async () => {
+        try {
+          const response = await client
+            .send("item_search_by_item_id", "")
+            .toPromise();
+
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
     });
   });
 
