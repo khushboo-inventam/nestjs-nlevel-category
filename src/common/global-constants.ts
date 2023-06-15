@@ -43,3 +43,13 @@ export const DYNAMIC_COLUMNS = {
   NOT_FOUND: 'Requested Dynamic-column not found.',
   NOT_DELETE_PARENT_ITEM: `This Dynamic-column cannot be deleted.`,
 };
+
+export const ITEM_DETAILS = {
+  FETCHED: 'Item-details has been fetched successfully.',
+  UPDATED: 'Item-details last active has been updated successfully.',
+  CREATED: 'Item-details has been added successfully.',
+  DELETED: 'Item-details has been removed  successfully.',
+  ALREADY_EXIST_ITEM_DETAILS: 'Item-details already exists .',
+  NOT_FOUND: 'Requested Item-details not found.',
+ 
+};

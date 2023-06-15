@@ -60,7 +60,7 @@ export class ItemService {
           'dynamicCol.name',
         ])
         .take(pagination.take)
-        //  .skip(pagination.skip)
+        .skip(pagination.skip)
         .getMany();
 
     } catch (error) {
