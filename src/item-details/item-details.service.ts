@@ -6,7 +6,6 @@ import {
   forwardRef,
 } from "@nestjs/common";
 import { CreateItemDetailDto } from "./dto/create-item-detail.dto";
-import { UpdateItemDetailDto } from "./dto/update-item-detail.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ItemDetail } from "./entities/item-detail.entity";
 import { ILike, Repository } from "typeorm";
@@ -14,6 +13,7 @@ import { setPagination, unixTimestamp } from "../common/pagination";
 import { ItemService } from "../item/item.service";
 import { DynamicColumnsService } from "../dynamic-columns/dynamic-columns.service";
 import { Item } from "../item/entities/item.entity";
+import { UpdateItemDetail } from "../app.interface";
 
 @Injectable()
 export class ItemDetailsService {
@@ -24,7 +24,7 @@ export class ItemDetailsService {
     private itemService: ItemService,
     @Inject(forwardRef(() => DynamicColumnsService))
     private dynamicColumnsService: DynamicColumnsService
-  ) { }
+  ) {}
 
   async create(createItemDetailDto: CreateItemDetailDto) {
     let newData = {};
@@ -69,24 +69,38 @@ export class ItemDetailsService {
   }
 
   async findAll(params) {
-    const pagination = setPagination(params);
-    console.log("pagination", pagination);
-    const whereCondition = { is_deleted: false };
+    let sortColumns = {};
+    let searchData = "";
+
+    if (!params?.sort_column) sortColumns = { sort_column: "itemd.created_at" };
+
     if (params?.search) {
-      Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
+      searchData = "and (itemd.name ilike :name)";
     }
+
+    let pagination = setPagination(Object.assign(params, sortColumns));
+    console.log("pagination", pagination);
+
     let data;
     try {
       data = await this.repo
         .createQueryBuilder("itemd")
+        .where(`itemd.is_deleted = :isDeleted ${searchData}`, {
+          isDeleted: false,
+          name: `%${params?.search}%`,
+        })
         // .leftJoinAndSelect(ItemDetail, "item_details", "item_details.item_id = item.item_id")
-        .leftJoinAndSelect("item", "items", "itemd.item_id = items.item_id  and  items.is_deleted = false ")
+        .leftJoinAndSelect(
+          "item",
+          "items",
+          "itemd.item_id = items.item_id  and  items.is_deleted = false "
+        )
         .leftJoinAndSelect(
           "dynamic_column",
           "dcol",
           "itemd.dynamic_id = dcol.dynamic_id and  items.is_deleted = false "
         )
-        .select(["itemd.item_detail_id", "itemd.value"])
+        .select(["itemd.item_detail_id", "itemd.value", "itemd.created_at"])
 
         .addSelect([
           "items.item_id",
@@ -94,14 +108,14 @@ export class ItemDetailsService {
           "dcol.dynamic_id",
           "dcol.name",
         ])
-        .where("itemd.is_deleted = :isDeleted ", { isDeleted: false })
         .take(pagination.take)
-
+        .skip(pagination.skip)
+        .orderBy(pagination.order)
         .getRawMany();
     } catch (error) {
       console.log("error", error);
     }
-
+    console.log("dataaa", data);
     return data;
   }
 
@@ -111,8 +125,12 @@ export class ItemDetailsService {
     });
   }
 
-  update(id: number, updateItemDetailDto: UpdateItemDetailDto) {
-    return `This action updates a #${id} itemDetail`;
+  update(id: number, updateItemDetailObj: UpdateItemDetail) {
+    return this.repo.save({
+      item_detail_id: id,
+      ...updateItemDetailObj,
+      updated_at: unixTimestamp().toString(),
+    });
   }
 
   remove(id: number) {

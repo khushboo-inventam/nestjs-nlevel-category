@@ -21,11 +21,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     console.log('errorMessage', errorMessage)
     if(request?.protocol?.includes('http') )
     {
+      console.log("statuss: ", status, 'errorMessagee: ', errorMessage)
       response.status(status).json({
         statusCode: status,
         message: errorMessage,
       });
     }else{
+      console.log("statusss: ", status, 'errorMessageee: ', errorMessage)
       return throwError(() => ({
         statusCode: status,
         message: errorMessage,

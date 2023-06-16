@@ -34,17 +34,18 @@ export class CategoryController {
 
   // @Post()
    @MessagePattern("category_create")
-  async create(@Body() createCategoryDto: CreateCategoryDto) {
+  async create(createCategoryDto: CreateCategoryDto) {
+    console.log("createCategoryDto", createCategoryDto);
     const createData = await this.categoryService.create(createCategoryDto);
     return {
       data: createData,
-      message: CATEGORY.UPDATED
+      message: CATEGORY.CREATED
     }
   }
 
   // @Get()
    @MessagePattern("category_search_by_name")
-  async findAll(@Query() params?: SearchTracksDto) {
+  async findAll(params?: SearchTracksDto) {
     const findAllData = await this.categoryService.findAll(params);
     return {
       data: findAllData,
@@ -70,15 +71,14 @@ export class CategoryController {
   //  @Patch(":id")
   @MessagePattern("category_update_category_by_id")
   async update(
-    @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto
+    updateCategoryDto: UpdateCategoryDto
   ) {
-
+    const { category_id, ...updateObj} = updateCategoryDto;
     // const catData = await this.categoryService.findOne(+id)
     // if (!catData || catData !== undefined) {
     //   throw new HttpException(CATEGORY.NOT_FOUND, HttpStatus.NOT_FOUND);
     // }
-    const updateCatData = await this.categoryService.update(+id, updateCategoryDto);
+    const updateCatData = await this.categoryService.update(+category_id, updateObj);
     return {
       data: updateCatData,
       message: CATEGORY.UPDATED
@@ -87,8 +87,7 @@ export class CategoryController {
 
   @MessagePattern("category_delete_by_category_id")
   // @Delete(":id")
-  async remove(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string,): Promise<MessageResponse> {
-    
+  async remove(id: string): Promise<MessageResponse> {
     await this.categoryService.remove(+id);
 
     return {

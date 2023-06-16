@@ -4,6 +4,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
 import { unixTimestamp } from "../common/pagination";
+import { DYNAMIC_COLUMNS } from "../common/global-constants";
 
 describe("DYNAMIC-COL", () => {
   let app: INestApplication;
@@ -48,7 +49,7 @@ describe("DYNAMIC-COL", () => {
 
   describe("dynamic-col-Module", () => {
     describe("dynamic_col_create", () => {
-      it("Dynamic-col / (POST)", async () => {
+      it("Dynamic-col / (POST) with blank data", async () => {
         try {
           const response = await client
             .send("dynamic_col_create", {
@@ -62,6 +63,40 @@ describe("DYNAMIC-COL", () => {
         } catch (err) {
           // console.log('err', err, typeof err)
           expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it("Dynamic-col / (POST) with actual data", async () => {
+        try {
+          const response = await client
+            .send("dynamic_col_create", {
+              name: "Fairness",
+              type: "fr",
+            })
+            .toPromise();
+
+          console.log('response 2', response, typeof response)
+          expect(response.message).toBe(DYNAMIC_COLUMNS.CREATED);
+        } catch (err) {
+          console.log('err 2', err, typeof err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it("Dynamic-col / (POST) with actual data but existing name", async () => {
+        try {
+          const response = await client
+            .send("dynamic_col_create", {
+              name: "Fairness",
+              type: "frn",
+            })
+            .toPromise();
+
+          console.log('response 3', response, typeof response)
+          expect(response.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (err) {
+          console.log('err 3', err, typeof err)
+          expect(err.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
         }
       });
 
@@ -90,6 +125,51 @@ describe("DYNAMIC-COL", () => {
           expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
+
+      it("Dynamic-col / (GET) find all  dynamic_col_search_by_name ", async () => 
+      {
+        try {
+          const response = await client
+            .send("dynamic_col_search_by_name", { limit: '2', sort_column: 'created_at', sort_order: 'asc' })
+            .toPromise();
+
+          console.log("response 8", response);
+          expect(response.message).toBe(DYNAMIC_COLUMNS.FETCHED);
+        } catch (err) {
+          console.log('err 8',err)
+          expect(err.statusCode).toBe(HttpStatus.OK);
+        }
+      });
+
+      it("Dynamic-col / (UPDATE) dynamic_col_update_dynamic_col_by_id", async () => {
+        try {
+          const response = await client
+            .send("dynamic_col_update_dynamic_col_by_id", { dynamic_id: 9, name: "Computer Hardwer 1", type: "Hardware" })
+            .toPromise();
+
+          console.log('response 9',response)
+          expect(response.message).toBe(DYNAMIC_COLUMNS.UPDATED);
+        } catch (err) {
+          console.log('err 9',err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it("Dynamic-col / (Delete) dynamic_col_delete_by_dynamic_col_id", async () => {
+        try {
+          const response = await client
+            .send("dynamic_col_delete_by_dynamic_col_id",
+              10)
+            .toPromise();
+          console.log('response 11',response)
+          expect(response.message).toBe(DYNAMIC_COLUMNS.DELETED);
+        } catch (err) {
+          console.log('err 11',err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+
 
       // it("Item / (GET) find Item_search_by_Item_id", async () => {
       //   try {

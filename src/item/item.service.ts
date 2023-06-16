@@ -8,6 +8,7 @@ import { setPagination, unixTimestamp } from '../common/pagination';
 import { ItemDetail } from '../item-details/entities/item-detail.entity';
 import { DynamicColumn } from '../dynamic-columns/entities/dynamic-column.entity';
 import { ITEM } from '../common/global-constants';
+import { UpdateItem } from '../app.interface';
 
 @Injectable()
 export class ItemService {
@@ -39,7 +40,7 @@ export class ItemService {
 
     let sortColumns = {};
     let searchData = ""
-    if (!params?.sort_column) sortColumns = { sort_column: 'cat.created_at' }
+    if (!params?.sort_column) sortColumns = { sort_column: 'item.created_at' }
     if (params?.search) {
       searchData = "and ( item.name ilike :name or ItemDetail.value ilike :name or dynamicCol.name ilike :name)"
     }
@@ -48,11 +49,11 @@ export class ItemService {
 
 
     try {
-      data = this.repo.createQueryBuilder("item")
+      data = await this.repo.createQueryBuilder("item")
         .where(` item.is_deleted = :isDeleted ${searchData}`, { isDeleted: false, name: `%${params?.search}%` })
         .leftJoinAndMapMany('item.item_details', 'item_details', 'ItemDetail', 'ItemDetail.item_id = item.item_id and  ItemDetail.is_deleted = :isDelete', { isDelete: false })
-        .innerJoinAndMapOne('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
-        .select(['item.item_id', 'item.name'])
+        .leftJoinAndMapOne('ItemDetail.dyn', 'dynamic_column', 'dynamicCol', 'dynamicCol.dynamic_id = ItemDetail.dynamic_id and dynamicCol.is_deleted = :isDelete', { isDelete: false })
+        .select(['item.item_id', 'item.name','item.created_at'])
         .addSelect([
           'ItemDetail.item_detail_id',
           'ItemDetail.value',
@@ -61,7 +62,11 @@ export class ItemService {
         ])
         .take(pagination.take)
         .skip(pagination.skip)
+        .orderBy(pagination.order)
         .getMany();
+
+        console.log("dataaaa", data); 
+        return data;
 
     } catch (error) {
       console.log('error', error)
@@ -86,11 +91,11 @@ export class ItemService {
     });
   }
 
-  update(id: number, updateItemDto: UpdateItemDto) {
+  update(id: number, updateItemObj: UpdateItem) {
     return this.repo.save(
       {
         item_id: id,
-        ...updateItemDto,
+        ...updateItemObj,
         updated_at: unixTimestamp().toString(),
       }
     );

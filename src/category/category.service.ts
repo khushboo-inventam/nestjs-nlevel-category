@@ -9,6 +9,7 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { IResponse } from "../common/response.interface";
 import { CATEGORY } from "../common/global-constants";
+import { UpdateCategory } from "../app.interface";
 
 @Injectable()
 export class CategoryService {
@@ -39,15 +40,16 @@ export class CategoryService {
   }
 
   async findAll(params) {
+    console.log("inside findAll");
 
     let sortColumns = {};
     let searchData = ""
-    if (!params?.sort_column) sortColumns = { sort_column: 'cat.created_at' }
+    if (!params?.sort_column) sortColumns = { sort_column: 'created_at' }
     if (params?.search) {
       searchData = "and ( cat.name ilike :name or pCat.name ilike :name)"
     }
     let pagination = setPagination(Object.assign(params, sortColumns));
-
+    console.log("pagination", pagination);
 
     let data = await this.repo
       .createQueryBuilder("cat")
@@ -66,9 +68,11 @@ export class CategoryService {
       //.orderBy(pagination.order)
       .take(pagination.take)
       .skip(pagination.skip)
+      .orderBy(pagination.order)
       .getMany()
 
       ;
+    console.log("dataaaa", data);  
     return data;
   }
 
@@ -93,11 +97,11 @@ export class CategoryService {
     return this.repo.find({ where: { category_id: id, is_deleted: false } })
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: number, updateCategory: UpdateCategory) {
     return this.repo.save(
       {
         category_id: id,
-        ...updateCategoryDto,
+        ...updateCategory,
         updated_at: unixTimestamp().toString(),
       }
     );

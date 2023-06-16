@@ -17,7 +17,7 @@ export class ItemController {
 
     @MessagePattern("item_create")
   // @Post()
-  async create(@Body() createItemDto: CreateItemDto) {
+  async create(createItemDto: CreateItemDto) {
 
     const createData = await this.itemService.create(createItemDto);
     return {
@@ -27,8 +27,8 @@ export class ItemController {
     }
   }
 
-   @MessagePattern("item_search_by_name")
-  // @Get()
+  //  @MessagePattern("item_search_by_name")
+  @Get()
   async findAll(@Query() params?: SearchTracksDto) {
     const findAllData = await this.itemService.findAll(params);
     return {
@@ -51,8 +51,9 @@ export class ItemController {
 
   @MessagePattern("item_update_item_by_id")
   // @Patch(':id')
-  async update(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string, @Body() updateItemDto: UpdateItemDto) {
-    const updateData = await this.itemService.update(+id, updateItemDto);
+  async update(updateItemDto: UpdateItemDto) {
+    const {item_id, ...updateItemObj} = updateItemDto;
+    const updateData = await this.itemService.update(+item_id, updateItemObj);
     return {
       data: updateData,
       message: ITEM.UPDATED
@@ -61,7 +62,7 @@ export class ItemController {
 
   @MessagePattern("item_delete_by_item_id")
   // @Delete(':id')
-  async remove(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string) {
+  async remove(id: string) {
     await this.itemService.remove(+id);
     return {
       message: ITEM.DELETED

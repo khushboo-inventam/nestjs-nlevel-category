@@ -4,6 +4,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
 import { request } from "http";
+import { ITEM } from "../common/global-constants";
 
 describe("ITEM", () => {
   let app: INestApplication;
@@ -48,7 +49,7 @@ describe("ITEM", () => {
 
   describe("Item-Module", () => {
     describe("item_create", () => {
-      it("Item / (POST)", async () => {
+      it("Item / (POST) with empty values", async () => {
         try {
           const response = await client
             .send("item_create", {
@@ -68,6 +69,46 @@ describe("ITEM", () => {
         }
       });
 
+      it("Item / (POST) with actual data ", async () => {
+        try {
+          const response = await client
+            .send("item_create", {
+              name: "Ball",
+              item_description: "Cricket ball",
+              image: "123.jpg",
+              item_code: "123",
+
+            })
+            .toPromise();
+
+          console.log('response 2', response, typeof response)
+          expect(response.message).toBe(ITEM.CREATED);
+        } catch (err) {
+          console.log('err 2', err, typeof err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it("Item / (POST) with actual data but existing name ", async () => {
+        try {
+          const response = await client
+            .send("item_create", {
+              name: "Ball",
+              item_description: "Cricket ball",
+              image: "123.jpg",
+              item_code: "123",
+
+            })
+            .toPromise();
+
+          console.log('response 3', response, typeof response)
+          expect(response.message).toBe(ITEM.CREATED);
+        } catch (err) {
+          console.log('err 3', err, typeof err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
       it("Item / (POST) without key", async () => {
         try {
           const response = await client.send("item_create", {}).toPromise();
@@ -83,7 +124,7 @@ describe("ITEM", () => {
       it("Item / (POST) with wrong value passed in name ", async () => {
         try {
           const response = await client
-            .send("Item_create", {
+            .send("item_create", {
               name: 5,
             })
             .toPromise();
@@ -128,6 +169,73 @@ describe("ITEM", () => {
           expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
         } catch (err) {
           expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      it("Item / (GET) find Item_search_by_Item_id with actual item id ", async () => {
+        try {
+          const response = await client
+            .send("item_search_by_item_id", "1")
+            .toPromise();
+
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      it("Item / (GET) find Item_search_by_Item_id with actual but non existing item id ", async () => {
+        try {
+          const response = await client
+            .send("item_search_by_item_id", "21")
+            .toPromise();
+
+          expect(response.message).toBe(ITEM.NOT_FOUND);
+        } catch (err) {
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      it("Item / (GET) find all  item_search_by_name ", async () => 
+      {
+        try {
+          const response = await client
+            .send("item_search_by_name", { limit: '3', sort_column: 'item.item_id', sort_order: 'asc'})
+            .toPromise();
+
+          console.log("response 8", response);
+          expect(response.message).toBe(ITEM.FETCHED);
+        } catch (err) {
+          console.log('err 8',err)
+          expect(err.statusCode).toBe(HttpStatus.OK);
+        }
+      });
+
+      it("Item / (UPDATE) item_update_item_by_id", async () => {
+        try {
+          const response = await client
+            .send("item_update_item_by_id", { id: 1, name: "Computer Hardwer 1", item_code: 2 })
+            .toPromise();
+
+          console.log('response 9',response)
+          expect(response.message).toBe(ITEM.UPDATED);
+        } catch (err) {
+          console.log('err 9',err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      it("Item / (Delete) item_delete_by_item_id", async () => {
+        try {
+          const response = await client
+            .send("item_delete_by_item_id",
+              1)
+            .toPromise();
+          console.log('response 11',response)
+          expect(response.message).toBe(ITEM.DELETED);
+        } catch (err) {
+          console.log('err 11',err)
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
 

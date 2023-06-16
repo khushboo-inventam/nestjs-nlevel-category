@@ -5,6 +5,7 @@ import { DynamicColumn } from './entities/dynamic-column.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { setPagination, unixTimestamp } from '../common/pagination';
+import { UpdateDynamicColumn } from '../app.interface';
 
 @Injectable()
 export class DynamicColumnsService {
@@ -25,6 +26,8 @@ export class DynamicColumnsService {
 
   async findAll(params) {
     const pagination = setPagination(params);
+    console.log("pagination", pagination);
+    
     const whereCondition = { is_deleted: false };
     if (params?.search) {
       Object.assign(whereCondition, { name: ILike(`%${params?.search}%`) });
@@ -39,7 +42,7 @@ export class DynamicColumnsService {
       where: {
         ...whereCondition,
       },
-   //   ...pagination,
+     ...pagination,
     });
     return data;
   }
@@ -50,11 +53,11 @@ export class DynamicColumnsService {
     });
   }
 
-  update(id: number, updateDynamicColumnDto: UpdateDynamicColumnDto) {
+  update(id: number, updateDynamicColumnObj: UpdateDynamicColumn) {
     return this.repo.update(
       { dynamic_id: id },
       {
-        ...updateDynamicColumnDto,
+        ...updateDynamicColumnObj,
         updated_at: unixTimestamp().toString(),
       }
     );

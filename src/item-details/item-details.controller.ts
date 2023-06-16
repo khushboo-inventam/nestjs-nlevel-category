@@ -7,18 +7,18 @@ import { SearchTracksDto } from '../common/SearchTracksDto.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilter } from '../common/all-exceptions.filter';
 import { MessagePattern } from '@nestjs/microservices';
-import { ITEM_DETAILS } from 'src/common/global-constants';
+import { ITEM_DETAILS } from '../common/global-constants';
 
-// @UseFilters(new AllExceptionsFilter())
-// @UsePipes(new ValidationPipe({ transform: true }))
+@UseFilters(new AllExceptionsFilter())
+@UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("item-details")
 @Controller('item-details')
 export class ItemDetailsController {
   constructor(private readonly itemDetailsService: ItemDetailsService) { }
 
-  // @MessagePattern("item-details_create")
-  @Post()
-  async create(@Body() createItemDetailDto: CreateItemDetailDto) {
+  @MessagePattern("item-details_create")
+  // @Post()
+  async create(createItemDetailDto: CreateItemDetailDto) {
     const createData = await this.itemDetailsService.create(createItemDetailDto);
     return { data: createData, message: ITEM_DETAILS.CREATED }
   }
@@ -31,24 +31,25 @@ export class ItemDetailsController {
 
   }
 
-  @Get(':id')
-  // @MessagePattern("item-details_search_by_item-details_id")
+  // @Get(':id')
+  @MessagePattern("item-details_search_by_item-details_id")
   async findOne(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string) {
     const findOneData = - await this.itemDetailsService.findOne(+id);
     return { data: findOneData, message: findOneData && findOneData !== undefined ? ITEM_DETAILS.FETCHED : ITEM_DETAILS.NOT_FOUND }
 
   }
 
-  @Patch(':id')
-  // @MessagePattern("item-details_update_item-details_by_id")
-  async update(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string, @Body() updateItemDetailDto: UpdateItemDetailDto) {
-    const updateData = await this.itemDetailsService.update(+id, updateItemDetailDto);
+  // @Patch(':id')
+  @MessagePattern("item-details_update_item-details_by_id")
+  async update(updateItemDetailDto: UpdateItemDetailDto) {
+    const {item_detail_id, ...updateItemDetailObj} = updateItemDetailDto;
+    const updateData = await this.itemDetailsService.update(+item_detail_id, updateItemDetailObj);
     return { data: updateData, message: ITEM_DETAILS.UPDATED }
   }
 
-  @Delete(':id')
-  // @MessagePattern("item-details_delete_by_item-details_id")
-  async remove(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string) {
+  // @Delete(':id')
+  @MessagePattern("item-details_delete_by_item-details_id")
+  async remove(id: string) {
     await this.itemDetailsService.remove(+id);
     return { message: ITEM_DETAILS.DELETED }
   }
