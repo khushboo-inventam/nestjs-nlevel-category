@@ -5,12 +5,14 @@ import { CategoryController } from "./category.controller";
 // import { categoryProviders } from '. /category.providers';
 import { Category } from "./entities/category.entity";
 import { APP_FILTER } from "@nestjs/core";
+import { History } from "../history/entities/history.entity";
+import { HistoryService } from "../history/history.service";
 // import { AllExceptionsFilter } from "../common/all-exceptions.filter";
 
 @Module({
   // imports: [DatabaseModule],
-  imports: [TypeOrmModule.forFeature([Category])],
+  imports: [TypeOrmModule.forFeature([Category]), TypeOrmModule.forFeature([History])],
   controllers: [CategoryController],
-  providers: [  CategoryService],
+  providers: [CategoryService, HistoryService],
 })
 export class CategoryModule { }

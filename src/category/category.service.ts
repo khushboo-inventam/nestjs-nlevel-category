@@ -112,9 +112,13 @@ export class CategoryService {
     if (isParentId.length !== 0) {
       throw new HttpException(CATEGORY.NOT_DELETE_PARENT_CATEGORY, HttpStatus.BAD_REQUEST);
     }
-    return this.repo.update(
+    await this.repo.update(
       { category_id: id },
       { is_deleted: true, deleted_at: unixTimestamp().toString() }
     );
+
+    const data = await this.repo.findOne({ where: { category_id: id } })
+
+    return data;
   }
 }
