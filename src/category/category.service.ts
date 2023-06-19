@@ -44,7 +44,7 @@ export class CategoryService {
 
     let sortColumns = {};
     let searchData = ""
-    if (!params?.sort_column) sortColumns = { sort_column: 'created_at' }
+    if (!params?.sort_column) sortColumns = { sort_column: 'cat.created_at' }
     if (params?.search) {
       searchData = "and ( cat.name ilike :name or pCat.name ilike :name)"
     }
@@ -61,7 +61,7 @@ export class CategoryService {
         { isDelete: false }
       )
       //  .leftJoinAndSelect(Category, "pCat", "pCat.parent_category_id = cat.category_id")
-      .select(["cat.category_id", "cat.name", "cat.parent_category_id"])
+      .select(["cat.category_id", "cat.name", "cat.parent_category_id", "cat.created_at"])
       .addSelect(["pCat.category_id", "pCat.name"])
       .where(` cat.is_deleted = :isDeleted and  cat.parent_category_id = :id ${searchData}`, { id: 0, name: `%${params?.search}%`, isDeleted: false  })
 

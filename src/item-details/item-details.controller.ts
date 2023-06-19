@@ -34,7 +34,7 @@ export class ItemDetailsController {
   // @Get(':id')
   @MessagePattern("item-details_search_by_item-details_id")
   async findOne(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string) {
-    const findOneData = - await this.itemDetailsService.findOne(+id);
+    const findOneData = await this.itemDetailsService.findOne(+id);
     return { data: findOneData, message: findOneData && findOneData !== undefined ? ITEM_DETAILS.FETCHED : ITEM_DETAILS.NOT_FOUND }
 
   }

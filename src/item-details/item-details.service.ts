@@ -75,7 +75,7 @@ export class ItemDetailsService {
     if (!params?.sort_column) sortColumns = { sort_column: "itemd.created_at" };
 
     if (params?.search) {
-      searchData = "and (itemd.name ilike :name)";
+      searchData = "and (itemd.value ilike :value)";
     }
 
     let pagination = setPagination(Object.assign(params, sortColumns));
@@ -87,7 +87,7 @@ export class ItemDetailsService {
         .createQueryBuilder("itemd")
         .where(`itemd.is_deleted = :isDeleted ${searchData}`, {
           isDeleted: false,
-          name: `%${params?.search}%`,
+          value: `%${params?.search}%`,
         })
         // .leftJoinAndSelect(ItemDetail, "item_details", "item_details.item_id = item.item_id")
         .leftJoinAndSelect(

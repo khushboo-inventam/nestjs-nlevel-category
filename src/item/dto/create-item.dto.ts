@@ -17,7 +17,7 @@ export class CreateItemDto {
     image: string;
 
     @ApiPropertyOptional({ description: "Enter the item's image" })
-    @IsOptional()
+    @IsNotEmpty()
     item_code: string;
 
 }
