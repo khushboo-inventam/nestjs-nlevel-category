@@ -11,6 +11,7 @@ import { ItemModule } from './item/item.module';
 import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
 import { ItemDetailsModule } from './item-details/item-details.module';
 import DatabaseModule from "./common/database.module";
+import { HistoryModule } from "./history/history.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import DatabaseModule from "./common/database.module";
     ItemModule,
     DynamicColumnsModule,
     ItemDetailsModule,
+    HistoryModule
   ],
   controllers: [AppController],
   providers: [

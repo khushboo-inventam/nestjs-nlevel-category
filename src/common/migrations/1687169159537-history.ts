@@ -47,6 +47,21 @@ export class History1687169159537 implements MigrationInterface {
                         type: "varchar",
                         isNullable: true,
                     },
+                    {
+                        name: "created_at",
+                        type: "varchar",
+                        isNullable: true,
+                    },
+                    {
+                        name: "updated_at",
+                        type: "varchar",
+                        isNullable: true,
+                    },
+                    {
+                        name: "deleted_at",
+                        type: "varchar",
+                        isNullable: true,
+                    },
                 ],
             }),
         );

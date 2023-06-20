@@ -53,3 +53,12 @@ export const ITEM_DETAILS = {
   NOT_FOUND: 'Requested Item-details not found.',
  
 };
+
+export const HISTORY = {
+  FETCHED: 'History has been fetched successfully.',
+  UPDATED: 'History last active has been updated successfully.',
+  CREATED: 'History has been added successfully.',
+  DELETED: 'History has been removed  successfully.',
+  ALREADY_EXIST_ITEM_DETAILS: 'History already exists .',
+  NOT_FOUND: 'Requested History not found.',
+}

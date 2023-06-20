@@ -26,5 +26,14 @@ import {
 
     @Column()
     action_at: string;
+
+    @Column()
+    created_at: string;
+
+    @Column()
+    updated_at: string;
+
+    @Column()
+    deleted_at: string;
   }
   
