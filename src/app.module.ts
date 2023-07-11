@@ -12,6 +12,8 @@ import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
 import { ItemDetailsModule } from './item-details/item-details.module';
 import DatabaseModule from "./common/database.module";
 import { HistoryModule } from "./history/history.module";
+import { PlanModule } from './plan/plan.module';
+import { PriceModule } from './price/price.module';
 
 @Module({
   imports: [
@@ -47,7 +49,9 @@ import { HistoryModule } from "./history/history.module";
     ItemModule,
     DynamicColumnsModule,
     ItemDetailsModule,
-    HistoryModule
+    HistoryModule,
+    PlanModule,
+    PriceModule
   ],
   controllers: [AppController],
   providers: [
