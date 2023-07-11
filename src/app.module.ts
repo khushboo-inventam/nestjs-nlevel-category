@@ -7,7 +7,11 @@ import { AppService } from "./app.service";
 import { CategoryModule } from "./category/category.module";
 import { AllExceptionsFilter } from "./common/all-exceptions.filter";
 import { APP_FILTER } from "@nestjs/core";
-import { CategorySchema } from "./category/entities/category.entity.schema";
+import { ItemModule } from './item/item.module';
+import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
+import { ItemDetailsModule } from './item-details/item-details.module';
+import DatabaseModule from "./common/database.module";
+import { HistoryModule } from "./history/history.module";
 
 @Module({
   imports: [
@@ -15,26 +19,35 @@ import { CategorySchema } from "./category/entities/category.entity.schema";
       useFactory: async (configService: ConfigService) => {
         return {
           type: "postgres",
-          host: "localhost",
+          host: "127.0.0.1",
           port: 5432,
           username: "postgres",
-          password: "postgres",
-          database: "cat_micro",
-          synchronize: true,
+          password: "root",
+          database: "microservice",
+          synchronize: false,
           autoLoadEntities: true,
           //  entities: ['src/**/entities/*.ts'],
-          // migrations: ['src/database/migrations/*.js'],
+          migrations: ['dist/common/migrations/*.ts'],
+          cli: {
+            migrationDir: 'src/common/migrations/*.ts'
+          }
+          , logging: true
         };
+
       },
 
       dataSourceFactory: async (options) => {
         const dataSource = await new DataSource(options).initialize();
-        console.log("dataSource", dataSource);
         return dataSource;
       },
     }),
-//      TypeOrmModule.forFeature([CategorySchema]),
+    //      TypeOrmModule.forFeature([CategorySchema]),
+    // DatabaseModule  ,
     CategoryModule,
+    ItemModule,
+    DynamicColumnsModule,
+    ItemDetailsModule,
+    HistoryModule
   ],
   controllers: [AppController],
   providers: [
@@ -45,4 +58,4 @@ import { CategorySchema } from "./category/entities/category.entity.schema";
     AppService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

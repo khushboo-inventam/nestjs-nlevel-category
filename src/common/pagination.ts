@@ -1,5 +1,5 @@
 export const setPagination = (options) => {
-  console.log("options", options);
+  // console.log("options", options);
   let sort;
   if (options?.sort_column) {
     const sortColumn = options.sort_column;
@@ -9,7 +9,7 @@ export const setPagination = (options) => {
         : "desc";
     sort = { [sortColumn]: order };
   } else {
-    sort = { created_at: "desc" };
+    sort = { 'created_at': "desc" };
   }
   const limit = +options?.limit ? +options.limit : 10;
   const offset =
@@ -19,7 +19,7 @@ export const setPagination = (options) => {
     take: limit,
     skip: offset,
   };
-  console.log("pagination", pagination);
+  // console.log("pagination", pagination);
   return pagination;
 };
 //         New

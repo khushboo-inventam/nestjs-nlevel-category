@@ -15,11 +15,11 @@ dotenv.config({ path: path.resolve(__dirname, `../.env`) });
 
 async function bootstrap() {
   const configService = new ConfigService({ app: appConfig() });
-  console.log("configService", configService);
+  // console.log("configService", configService);
   const port = configService.get<number>("app.port") || 3000;
   const host = configService.get<string>("app.host") || "localhost";
-  console.log("port", configService.get<number>("app.port"));
-  console.log("host", configService.get<string>("app.host"));
+  // console.log("port", configService.get<number>("app.port"));
+  // console.log("host", configService.get<string>("app.host"));
 
   const devTransports = [
     new winston.transports.Console({
@@ -54,7 +54,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
-    options: { retryAttempts: 5, retryDelay: 3000 },
+    options: { retryAttempts: 5, retryDelay: 3000},
   });
   await app.startAllMicroservices();
   //   const app = await NestFactory.create(AppModule, {

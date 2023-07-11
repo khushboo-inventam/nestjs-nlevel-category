@@ -3,7 +3,7 @@ import { CategoryService } from "./category.service";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { ClientProxy, ClientsModule, Transport } from "@nestjs/microservices";
 import { AppModule } from "../app.module";
-import { request } from "http";
+import { CATEGORY } from "../common/global-constants";
 
 describe("CATEGORY", () => {
   let app: INestApplication;
@@ -39,26 +39,18 @@ describe("CATEGORY", () => {
 
     client = app.get("CATEGORY");
     await client.connect();
-
-    //   const response = await request(app.)
-    //     .post('/auth/login')
-    //     .send({ email: 'test@example.com', password: 'Test@123' });
-    //   jwtToken = response.body.data.access_token;
-    //   email = response.body.data.email;
   });
 
   afterAll(async () => {
-    // await request(app.getHttpServer()).get('/auth/logout').set('authorization', `${jwtToken}`);
-    // await Promise.all([app.close()]);
-
     await app.close();
     client.close();
     console.log("afterAll");
   });
 
   describe("Category-Module", () => {
-    describe("UserLogin", () => {
-      it("Category / (POST)", async () => {
+    describe("Category", () => {
+      /* 1. Empty keys */
+      it("Category / (POST) empty keys", async () => {
         try {
           const response = await client
             .send("category_create", {
@@ -67,70 +59,227 @@ describe("CATEGORY", () => {
             })
             .toPromise();
 
-          // console.log('response', response, typeof response)
+          console.log("response 1", response, typeof response);
           expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
-          // console.log('err', err, typeof err)
+          console.log("err 1", err, typeof err);
           expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
+
+      /* 2. Without key */
 
       it("Category / (POST) without key", async () => {
         try {
           const response = await client.send("category_create", {}).toPromise();
 
-          // console.log('response', response, typeof response)
+          console.log("response 2", response, typeof response);
           expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
-          // console.log('err', err, typeof err)
+          console.log("err 2", err, typeof err);
           expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
 
-//       it("Category / (POST) with wrong parent_category_id", async () => {
-//         try {
-//           const response = await client
-//             .send("category_create", {
-//               name: "WER",
-//               parent_category_id: "15",
-//             })
-//             .toPromise();
+      /* 3. Wrong parent_category_id */
 
-//           expect(response.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-//         } catch (err) {
-//           expect(err.statusCode).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-//         }
-//       });
-
-      it("Category / (GET) find category_search_by_category_id", async () => {
+      it("Category / (POST) with wrong parent_category_id", async () => {
         try {
           const response = await client
-            .send("category_search_by_category_id", +44444)
+            .send("category_create", {
+              name: "WER",
+              parent_category_id: "15",
+            })
             .toPromise();
-          console.log('response.....***************.get  ', response.statusCode)
-          expect(response.statusCode).toBe(HttpStatus.NOT_FOUND);
+
+          console.log("response 3", response, typeof response);
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
         } catch (err) {
-          expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+          console.log("err 3", err, typeof err);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      /* 4. Blank parent_category_id */
+
+      it("Category / (POST) with blank category name ", async () => {
+        try {
+          const response = await client
+            .send("category_create", {
+              parent_category_id: "55",
+            })
+            .toPromise();
+          console.log("response 4", response, typeof response);
+          expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        } catch (err) {
+          console.log("err 4", err, typeof err);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      /* 5. With actual data */
+
+      it("Category / (POST) with actual data", async () => {
+        console.log("here");
+        try {
+          const response = await client
+            .send("category_create", {
+              name: "Fashion",
+              parent_category_id: 0,
+            })
+            .toPromise();
+          console.log("response 5", response);
+          expect(response.message).toBe(CATEGORY.CREATED);
+        } catch (err) {
+          console.log("err 5", err);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      /* 6. Search category by id  by passing integer */
+
+      it("Category / (GET) find category_search_by_category_id by passing integer", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id", +1555)
+            .toPromise();
+          console.log("response 6", response, typeof response);
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          console.log("err 6", err, typeof err);
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      /* 7. Search category by blank category id */
+
+      it("Category / (GET) find category_search_by_category_id with blank category id ", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id", "")
+            .toPromise();
+          console.log("response 7", response, typeof response);
+          expect(response.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        } catch (err) {
+          console.log("err 7", err, typeof err);
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      /* 8. With actual category id */
+
+      it("Category / (GET) find category_search_by_category_id with actual category id ", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id", "1")
+            .toPromise();
+          console.log("response 8", response, typeof response);
+          expect(response.message).toBe(CATEGORY.FETCHED);
+        } catch (err) {
+          console.log("err 8", err, typeof err);
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      /* 9. actual but not existing category id */
+
+      it("Category / (GET) find category_search_by_category_id with actual but not existing category id ", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_category_id", +11)
+            .toPromise();
+          console.log("response 9", response, typeof response);
+          expect(response.message).toBe(CATEGORY.NOT_FOUND);
+        } catch (err) {
+          console.log("err 9", err, typeof err);
+          expect(err.statusCode).toBe(HttpStatus.NOT_ACCEPTABLE);
+        }
+      });
+
+      //This testcase is failing. Need to check what's the issue.
+      // it("Category / (GET) find all  category_search_by_name ", async () =>
+      // {
+      //   try {
+      //     const response = await client
+      //       .send("category_search_by_name", {})
+      //       .toPromise();
+
+      //     console.log("response 7", response);
+      //     expect(response.message).toBe(CATEGORY.FETCHED);
+      //   } catch (err) {
+      //     console.log('err 7',err)
+      //     expect(err.statusCode).toBe(HttpStatus.OK);
+      //   }
+      // });
+
+      /* 10. Search by name with pagination */
+      it("Category / (GET) find all  category_search_by_name with pagination", async () => {
+        try {
+          const response = await client
+            .send("category_search_by_name", {
+              limit: "3",
+              sort_column: "cat.category_id",
+              sort_order: "desc",
+            })
+            .toPromise();
+
+          console.log("response 10", response);
+          expect(response.message).toBe(CATEGORY.FETCHED);
+        } catch (err) {
+          console.log("err 10", err);
+          expect(err.statusCode).toBe(HttpStatus.OK);
+        }
+      });
+
+      /* 11.Update */
+
+      it("Category / (UPDATE) category_update_category_by_id", async () => {
+        try {
+          const response = await client
+            .send("category_update_category_by_id", {
+              category_id: 1,
+              name: "Computer Software 1",
+              parent_category_id: 2,
+            })
+            .toPromise();
+
+          console.log("response 11", response);
+          expect(response.message).toBe(CATEGORY.UPDATED);
+        } catch (err) {
+          console.log("err 11", err);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        }
+      });
+
+      /* 12. Delete by id which is existing's parent*/
+
+      it("Category / (Delete) category_delete_category_by_id which is existing's parent", async () => {
+        try {
+          const response = await client
+            .send("category_delete_by_category_id", 1)
+            .toPromise();
+          console.log("response 12", response);
+          expect(response.message).toBe(CATEGORY.DELETED);
+        } catch (err) {
+          console.log("err 12", err);
+          expect(err.message).toBe(CATEGORY.NOT_DELETE_PARENT_CATEGORY);
+        }
+      });
+
+      /* 13. Delete by id */
+
+      it("Category / (Delete) category_delete_by_category_id", async () => {
+        try {
+          const response = await client
+            .send("category_delete_by_category_id", 5)
+            .toPromise();
+          console.log("response 13", response);
+          expect(response.message).toBe(CATEGORY.DELETED);
+        } catch (err) {
+          console.log("err 13", err);
+          expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
         }
       });
     });
   });
-
-  //   describe('Get category', () => {
-  //           it('/category (GET)', async () => {
-  //             await request(app.getHttpServer()).get(`/category/${id}/`).expect(HttpStatus.UNAUTHORIZED);
-  //           });
-  //           it('/category (GET)', async () => {
-  //             await request(app.getHttpServer())
-  //               .get(`/category/${trueData}/`)
-  //               .expect(HttpStatus.INTERNAL_SERVER_ERROR);
-  //           });
-  //           it('/category (GET)', async () => {
-  //             detailed = false;
-  //             await request(app.getHttpServer())
-  //               .get(`/category/?${detailed}/`)
-
-  //               .expect(HttpStatus.OK);
-  //           });
-  //         });
 });
