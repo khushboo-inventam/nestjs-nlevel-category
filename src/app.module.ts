@@ -14,6 +14,7 @@ import DatabaseModule from "./common/database.module";
 import { HistoryModule } from "./history/history.module";
 import { PlanModule } from './plan/plan.module';
 import { PriceModule } from './price/price.module';
+import { StripeModule } from "./stripe/stripe.module";
 
 @Module({
   imports: [
@@ -42,6 +43,14 @@ import { PriceModule } from './price/price.module';
         const dataSource = await new DataSource(options).initialize();
         return dataSource;
       },
+    }),
+
+    StripeModule.forRootAsync({
+      apiKey: 'sk_test_51Ljx7VSAmJCW9SjgwVaXt4ZONKiXKU5psO2EkRi9uVy4w1SefwSDKlOFlXtynqweoF4g7U9DWsnxKX0sIL4Mz9oL00hRK09mjk',
+      config: { apiVersion: '2022-11-15' },
+      // webhookConfig: {
+      //   stripeWebhookSecret: configServiceObj.get<string>('stripe.stripe_webhook_key'),
+      // },
     }),
     //      TypeOrmModule.forFeature([CategorySchema]),
     // DatabaseModule  ,
