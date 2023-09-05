@@ -15,11 +15,11 @@ export class CreatePlanDto {
 
     @ApiPropertyOptional({ description: "Enter the plan's image" })
     @IsOptional()
-    description: string;
+    item_description: string;
 
     @ApiPropertyOptional({ description: "Enter the plan's image" })
     @IsOptional()
-    meta_data : string;
+    metadata : string;
 
     @ApiPropertyOptional({ description: "Enter the plan's image" })
     @IsOptional()

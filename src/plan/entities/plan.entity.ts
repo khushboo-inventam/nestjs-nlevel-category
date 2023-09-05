@@ -15,20 +15,18 @@ export class Plan {
     @Column()
     description: string;
 
+     
     @Column()
-    item_description: string;
-
-    @Column()
-    meta_data: string;
+    metadata: string;
 
     @Column({ default: true })
     active: boolean;
 
-    @Column()
-    payment_gateway_plan_id: string;
+    // @Column()
+    // payment_gateway_plan_id: string;
 
-    @Column()
-    payment_gateway_default_price: string;
+    // @Column()
+    // payment_gateway_default_price: string;
 
     @Column({ default: false })
     is_deleted: boolean;

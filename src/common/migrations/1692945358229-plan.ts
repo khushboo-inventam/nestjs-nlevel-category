@@ -53,7 +53,7 @@ export class Plan1692945358229 implements MigrationInterface {
                     },
                     {
                         name: "metadata",
-                        type: "json",
+                        type: "varchar",
                         length: "255",
                         isNullable: true
                     },

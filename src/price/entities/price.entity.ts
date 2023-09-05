@@ -25,8 +25,8 @@ export class Price {
     @Column({ default: true })
     active: boolean;
 
-    @Column()
-    payment_gateway_plan_id: string;
+    // @Column()
+    // payment_gateway_plan_id: string;
   
     @Column()
     payment_gateway_price_id: string;
