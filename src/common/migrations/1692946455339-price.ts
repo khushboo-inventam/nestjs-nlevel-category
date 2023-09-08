@@ -39,19 +39,19 @@ export class Price1692946455339 implements MigrationInterface {
                         isNullable: true
                     },
                     {
-                        name: "custom_unit_amount",
+                        name: "unit_amount",
                         type: "varchar",
                         length: "255",
                         isNullable: true
                     },
                     {
-                        name: "insterval",
+                        name: "interval",
                         type: "varchar",
                         length: "255",
                         isNullable: true
                     },
                     {
-                        name: "insterval_count",
+                        name: "interval_count",
                         type: "integer",
                         isNullable: false,
                     },

@@ -1,8 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, UseFilters } from '@nestjs/common';
 import { PriceService } from './price.service';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { AllExceptionsFilter } from 'src/common/all-exceptions.filter';
 
+
+
+@UseFilters(new AllExceptionsFilter())
+@UsePipes(new ValidationPipe({ transform: true }))
+@ApiTags("price")
 @Controller('price')
 export class PriceController {
   constructor(private readonly priceService: PriceService) {}

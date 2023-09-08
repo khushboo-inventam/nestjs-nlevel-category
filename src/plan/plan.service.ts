@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { Plan } from './entities/plan.entity';
@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { unixTimestamp } from 'src/common/pagination';
 import Stripe from 'stripe';
 import { STRIPE_TOKEN } from 'src/stripe/stripe-options.interface';
+import { PLAN } from 'src/common/global-constants';
 
 @Injectable()
 export class PlanService {
@@ -16,6 +17,8 @@ export class PlanService {
   ) { }
 
   async create(createPlanDto: CreatePlanDto) {
+    const alreadyExist = await this.repo.find({ where: { is_deleted: false, name: createPlanDto.name } })
+    if  (alreadyExist )throw new HttpException(PLAN.ALREADY_EXIST_PLAN, HttpStatus.UNPROCESSABLE_ENTITY);
     let data
     try {
 
@@ -26,9 +29,9 @@ export class PlanService {
       });
 
       if (data && data !== undefined) {
-        // const alreadyExist = await this.stripeClient.products.search({ query: `name:'${data.name}'` })
-        
-        const planAddIntoStripe = await this.stripeClient.products.create({
+        // const alreadyExistInStripe  = await this.stripeClient.products.search({ query: `name:'${data.name}'` })
+
+        await this.stripeClient.products.create({
           name: data.name
         })
       }

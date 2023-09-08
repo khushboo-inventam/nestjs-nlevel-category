@@ -62,3 +62,22 @@ export const HISTORY = {
   ALREADY_EXIST_ITEM_DETAILS: 'History already exists .',
   NOT_FOUND: 'Requested History not found.',
 }
+
+
+export const PLAN = {
+  FETCHED: 'Plan has been fetched successfully.',
+  UPDATED: 'Plan last active has been updated successfully.',
+  CREATED: 'Plan has been added successfully.',
+  DELETED: 'Plan has been removed  successfully.',
+  ALREADY_EXIST_PLAN: 'Plan already exists.',
+  NOT_FOUND: 'Requested Plan not found.',
+};
+
+export const PRICE = {
+  FETCHED: 'Price has been fetched successfully.',
+  UPDATED: 'Price last active has been updated successfully.',
+  CREATED: 'Price has been added successfully.',
+  DELETED: 'Price has been removed  successfully.',
+  ALREADY_EXIST_PRICE: 'Price already exists .',
+  NOT_FOUND: 'Requested Price not found.',
+};

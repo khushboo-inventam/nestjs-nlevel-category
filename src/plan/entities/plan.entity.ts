@@ -16,17 +16,17 @@ export class Plan {
     description: string;
 
      
-    @Column()
+    @Column({type:'jsonb'})
     metadata: string;
 
     @Column({ default: true })
     active: boolean;
 
-    // @Column()
-    // payment_gateway_plan_id: string;
+    @Column()
+    stripe_plan_id: string;
 
-    // @Column()
-    // payment_gateway_default_price: string;
+    @Column()
+    stripe_default_price: string;
 
     @Column({ default: false })
     is_deleted: boolean;

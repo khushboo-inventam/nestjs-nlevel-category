@@ -17,7 +17,7 @@ export class Subscription1692947162507 implements MigrationInterface {
 
                     },
                     {
-                        name: "gatway_subscription_id",
+                        name: "stripe_subscription_id",
                         type: "varchar",
                         length: "255",
                     },
@@ -30,6 +30,117 @@ export class Subscription1692947162507 implements MigrationInterface {
                         name: "price_id",
                         type: "integer",
                         isNullable: false,
+                    },
+
+                    {
+                        name: "user_id",
+                        type: "integer",
+                        isNullable: false,
+                    },
+
+                    {
+                        name: "billing_cycle_anchor",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "cancel_at",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "cancel_at_period_end",
+                        type: "boolean",
+                        default: false,
+                        isNullable: true,
+                    },
+                    {
+                        name: "canceled_at",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "created",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "currency",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "current_period_end",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "current_period_start",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "customer",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "default_payment_method",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "description",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "discount",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+
+                    {
+                        name: "ended_at",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "metadata",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+
+                    {
+                        name: "schedule",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "start_date",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
+                    },
+                    {
+                        name: "status",
+                        type: "varchar",
+                        length: "255",
+                        isNullable: true,
                     },
                     {
                         name: "is_deleted",

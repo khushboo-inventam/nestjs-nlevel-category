@@ -16,20 +16,27 @@ export class Price {
     @Column()
     unit_amount: string;
 
-    @Column()
-    description: string;
 
     @Column()
-    meta_data: string;
+    interval: string;
+ 
+    @Column()
+    interval_count: number;
+
+    // @Column()
+    // description: string;
+
+    // @Column()
+    // meta_data: string;
 
     @Column({ default: true })
     active: boolean;
 
-    // @Column()
-    // payment_gateway_plan_id: string;
+    @Column()
+    stripe_plan_id: string;
   
     @Column()
-    payment_gateway_price_id: string;
+    stripe_price_id: string;
 
     @Column({ default: false })
     is_deleted: boolean;
