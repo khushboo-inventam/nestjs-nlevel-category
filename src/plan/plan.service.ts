@@ -18,7 +18,8 @@ export class PlanService {
 
   async create(createPlanDto: CreatePlanDto) {
     const alreadyExist = await this.repo.find({ where: { is_deleted: false, name: createPlanDto.name } })
-    if  (alreadyExist )throw new HttpException(PLAN.ALREADY_EXIST_PLAN, HttpStatus.UNPROCESSABLE_ENTITY);
+    console.log('alreadyExist', alreadyExist)
+    if (alreadyExist && alreadyExist.length > 0) throw new HttpException(PLAN.ALREADY_EXIST_PLAN, HttpStatus.UNPROCESSABLE_ENTITY);
     let data
     try {
 
@@ -31,9 +32,15 @@ export class PlanService {
       if (data && data !== undefined) {
         // const alreadyExistInStripe  = await this.stripeClient.products.search({ query: `name:'${data.name}'` })
 
-        await this.stripeClient.products.create({
+        const addPlanInStripe = await this.stripeClient.products.create({
           name: data.name
         })
+
+        if (addPlanInStripe && addPlanInStripe !== undefined && addPlanInStripe?.id && addPlanInStripe?.id !== undefined) {
+          // let stripeProductId: string = addPlanInStripe.id.toString();
+          await this.repo.update({ plan_id: data.plan_id },
+            { stripe_plan_id: addPlanInStripe.id })
+        }
       }
 
     } catch (error) {
@@ -44,7 +51,17 @@ export class PlanService {
   }
 
   findAll() {
-    return `This action returns all plan`;
+    return this.repo
+      .createQueryBuilder("plan")
+      .leftJoinAndMapMany(
+        "plan.plan_id",
+        "price",
+        "price",
+        "price.plan_id = plan.plan_id and plan.is_deleted = :isDelete",
+        { isDelete: false }
+      )
+      .where("price.is_deleted = :isDeleted ", { isDeleted: false })
+      .getMany();
   }
 
   findOne(id: number) {

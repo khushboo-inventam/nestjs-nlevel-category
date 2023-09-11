@@ -14,18 +14,18 @@ import { Plan } from 'src/plan/entities/plan.entity';
 export class PriceService {
 
   constructor(@InjectRepository(Price) private readonly repo: Repository<Price>,
-  @InjectRepository(Plan) private readonly planRepo: Repository<Plan>,
+    @InjectRepository(Plan) private readonly planRepo: Repository<Plan>,
     @Inject(STRIPE_TOKEN) private readonly stripeClient: Stripe,
   ) { }
 
   async create(createPriceDto: CreatePriceDto) {
 
-    const planExist = await this.planRepo.find({ where: { is_deleted: false, plan_id: +createPriceDto.plan_id } })
-    if (!planExist) throw new HttpException(PLAN.NOT_FOUND, HttpStatus.NOT_FOUND);
+    const [planExist] = await this.planRepo.find({ where: { is_deleted: false, plan_id: +createPriceDto.plan_id } })
+    if (!planExist || planExist === undefined) throw new HttpException(PLAN.NOT_FOUND, HttpStatus.NOT_FOUND);
 
 
-    const alreadyExist = await this.repo.find({ where: { is_deleted: false, plan_id: +createPriceDto.plan_id } })
-    if (alreadyExist) throw new HttpException(PRICE.ALREADY_EXIST_PRICE, HttpStatus.UNPROCESSABLE_ENTITY);
+    const alreadyExist = await this.repo.find({ where: { is_deleted: false, plan_id: +createPriceDto.plan_id, interval: createPriceDto.interval, interval_count: createPriceDto.interval_count } })
+    if (alreadyExist && alreadyExist.length > 0) throw new HttpException(PRICE.ALREADY_EXIST_PRICE, HttpStatus.UNPROCESSABLE_ENTITY);
     let data
 
     try {
@@ -36,16 +36,22 @@ export class PriceService {
         created_at: unixTimestamp().toString()
       });
 
-      if (data && data !== undefined  ) {
-      // if (data && data !== undefined  &&  planExist.stripe_plan_id ) {
-        // const alreadyExistInStripe  = await this.stripeClient.products.search({ query: `name:'${data.name}'` })
+      //  Stripe data insert and  manipulate  
+      if (data && data !== undefined && planExist.stripe_plan_id) {
 
-        await this.stripeClient.prices.create({
-          unit_amount: data.amount,
+        const addPriceInStripe = await this.stripeClient.prices.create({
+          unit_amount: data.unit_amount,
           currency: data.currency,
           recurring: { interval: data.interval, interval_count: data.interval_count },
-          // product: planExist.stripe_plan_id,
+          product: planExist.stripe_plan_id,
         })
+
+        if (addPriceInStripe && addPriceInStripe !== undefined && addPriceInStripe?.id && addPriceInStripe?.id !== undefined) {
+          let stripeProductId: string = addPriceInStripe.product.toString();
+          await this.repo.update({ price_id: data.price_id },
+            { stripe_price_id: addPriceInStripe.id, stripe_plan_id: stripeProductId })
+        }
+
       }
 
     } catch (error) {
@@ -56,11 +62,10 @@ export class PriceService {
   }
 
   findAll() {
-    return `This action returns all price`;
+    return this.repo.find({ where: { is_deleted: false } })
   }
-
   findOne(id: number) {
-    return `This action returns a #${id} price`;
+    return this.repo.findOne({ where: { is_deleted: false } })
   }
 
   update(id: number, updatePriceDto: UpdatePriceDto) {

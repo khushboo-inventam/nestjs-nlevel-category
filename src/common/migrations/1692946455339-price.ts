@@ -18,7 +18,7 @@ export class Price1692946455339 implements MigrationInterface {
                     {
                         name: "stripe_price_id",
                         type: "varchar",
-                        default: 255,
+                        length: "255",
                         isNullable: true,
                     },
                     {
@@ -29,7 +29,7 @@ export class Price1692946455339 implements MigrationInterface {
                     {
                         name: "stripe_plan_id",
                         type: "varchar",
-                        default: 255,
+                        length: "255",
                         isNullable: true,
                     },
                     {

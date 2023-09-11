@@ -15,6 +15,7 @@ import { HistoryModule } from "./history/history.module";
 import { PlanModule } from './plan/plan.module';
 import { PriceModule } from './price/price.module';
 import { StripeModule } from "./stripe/stripe.module";
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -60,7 +61,8 @@ import { StripeModule } from "./stripe/stripe.module";
     ItemDetailsModule,
     HistoryModule,
     PlanModule,
-    PriceModule
+    PriceModule,
+    SubscriptionModule
   ],
   controllers: [AppController],
   providers: [

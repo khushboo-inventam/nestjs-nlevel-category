@@ -18,7 +18,7 @@ export class Plan1692945358229 implements MigrationInterface {
                     {
                         name: "stripe_plan_id",
                         type: "varchar",
-                        default: 255,
+                        length: "255",
                         isNullable: true,
                     },
                     {
