@@ -16,6 +16,7 @@ import { PlanModule } from './plan/plan.module';
 import { PriceModule } from './price/price.module';
 import { StripeModule } from "./stripe/stripe.module";
 import { SubscriptionModule } from './subscription/subscription.module';
+import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 
 @Module({
   imports: [
@@ -62,7 +63,8 @@ import { SubscriptionModule } from './subscription/subscription.module';
     HistoryModule,
     PlanModule,
     PriceModule,
-    SubscriptionModule
+    SubscriptionModule,
+    PaymentMethodsModule
   ],
   controllers: [AppController],
   providers: [

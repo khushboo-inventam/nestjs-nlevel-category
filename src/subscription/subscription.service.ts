@@ -21,7 +21,8 @@ export class SubscriptionService {
 
   async create(createSubscriptionDto: CreateSubscriptionDto, request) {
 
-    /// check customer is exist or not 
+
+                                                                      
     let customerId :string  ='cus_NEAAB4tK516HQT';
 
 
@@ -64,9 +65,7 @@ export class SubscriptionService {
         })
       }
     }
-    const planDetail = await this.priceRepo.findOne({})
-
-
+    
 
   }
 
