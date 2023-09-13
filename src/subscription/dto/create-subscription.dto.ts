@@ -7,17 +7,17 @@ export class CreateSubscriptionDto {
     @IsNumber()
     @IsNotEmpty()
     plan_id: number;
-  
+
     @ApiProperty({ description: 'Enter the price id' })
     @IsNumber()
     @IsNotEmpty()
     price_id: number;
-  
+
     @ApiPropertyOptional({ description: 'Enter the payment id' })
     @IsOptional()
-    @IsString()
-    payment_method_id: string;
-  
+    @IsNumber()
+    payment_method_id: number;
+
     // @ApiPropertyOptional({ description: 'Enter the promotion code ' })
     // @IsString()
     // @IsOptional()

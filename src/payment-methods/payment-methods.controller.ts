@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseFilters, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseFilters, ValidationPipe, UsePipes, Req } from '@nestjs/common';
 import { PaymentMethodsService } from './payment-methods.service';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
@@ -14,11 +14,11 @@ export class PaymentMethodsController {
 
 
   constructor(private readonly paymentMethodsService: PaymentMethodsService
-    ) { }
+  ) { }
 
   @Post()
-  create(@Body() createPaymentMethodDto: CreatePaymentMethodDto) {
-    return this.paymentMethodsService.create(createPaymentMethodDto);
+  create(@Body() createPaymentMethodDto: CreatePaymentMethodDto, @Req() request) {
+    return this.paymentMethodsService.create(createPaymentMethodDto, { user: { userId: 1 } });
   }
 
   @Get()

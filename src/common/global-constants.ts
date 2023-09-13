@@ -81,3 +81,15 @@ export const PRICE = {
   ALREADY_EXIST_PRICE: 'Price already exists .',
   NOT_FOUND: 'Requested Price not found.',
 };
+
+export const PROMOCODE = {
+  CREATED: 'Promo code has been generated successfully.',
+  EXPIRED: 'Promo code expired',
+  NOT_APPLICABLE: 'Promo code cannot be applied to your purchase',
+  NOT_APPLICABLE_ON_PRODUCT: 'Promo code cannot be applied to your subscription.',
+  INVALID: 'Invalid promo code',
+  ALREADY_APPLIED: 'Promo code already applied',
+  AMOUNT_OR_PERCENTAGE: 'The amount or percentage can only be added off at times.',
+  USER_MAX_REDEMPTIONS: 'The maximum number of redemptions equals the number of users.',
+  APPLIED: 'Promo code has been apply successfully.',
+};

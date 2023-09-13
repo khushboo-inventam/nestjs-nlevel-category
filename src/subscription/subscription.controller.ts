@@ -14,7 +14,7 @@ export class SubscriptionController {
 
   @Post()
   create(@Body() createSubscriptionDto: CreateSubscriptionDto, @Req() request) {
-    return this.subscriptionService.create(createSubscriptionDto, request);
+    return this.subscriptionService.create(createSubscriptionDto,  { user: { userId: 1 } });
   }
 
   @Get()
