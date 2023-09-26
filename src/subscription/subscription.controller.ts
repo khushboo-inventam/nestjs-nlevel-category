@@ -26,10 +26,10 @@ export class SubscriptionController {
   findOne(@Param('id') id: string) {
     return this.subscriptionService.findOne(+id);
   }
-
+ 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubscriptionDto: UpdateSubscriptionDto) {
-    return this.subscriptionService.update(+id, updateSubscriptionDto);
+  update() {
+    return this.subscriptionService.update();
   }
 
   @Delete(':id')

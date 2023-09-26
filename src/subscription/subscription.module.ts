@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { SubscriptionController } from './subscription.controller';
 import { Plan } from 'src/plan/entities/plan.entity';
@@ -10,8 +10,8 @@ import { PaymentMethod } from 'src/payment-methods/entities/payment-method.entit
 
 @Module({
   imports: [TypeOrmModule.forFeature([Plan]), TypeOrmModule.forFeature([Price]), TypeOrmModule.forFeature([Subscription]),
-  , TypeOrmModule.forFeature([PaymentMethod])
-],
+  TypeOrmModule.forFeature([PaymentMethod])
+  ],
   controllers: [SubscriptionController],
   providers: [SubscriptionService]
 })

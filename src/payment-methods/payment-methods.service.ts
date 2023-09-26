@@ -16,13 +16,13 @@ export class PaymentMethodsService {
   }
 
 
-  async create(createPaymentMethodDto: CreatePaymentMethodDto,request ) {
+  async create(createPaymentMethodDto: CreatePaymentMethodDto, request) {
     // const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
-    const  stripeCustomerId ={stripe_user_id :  ''}
+    const stripeCustomerId = { stripe_user_id: '' }
     const addNewPayment = await this.stripeClient.paymentMethods
       .attach(createPaymentMethodDto.payment_method_id, {
         customer: stripeCustomerId.stripe_user_id,
-      })  
+      })
       .then(async (paymentMethodData) => {
         // console.log('data', paymentMethodData);
         const addNewPaymentDetail = await this.paymentMethodRepo.create({
@@ -49,9 +49,9 @@ export class PaymentMethodsService {
         //     console.log('error', error);
         throw new HttpException(error, HttpStatus.BAD_REQUEST);
       });
-   
+
     return addNewPayment;
-      
+
   }
 
   findAll() {
@@ -68,5 +68,23 @@ export class PaymentMethodsService {
 
   remove(id: number) {
     return `This action removes a #${id} paymentMethod`;
+  }
+
+  async createPaymentMethod(createPaymentMethodDto: CreatePaymentMethodDto, request) {
+    const paymentMethod = await this.stripeClient.paymentMethods.create({
+      type: 'card',
+      card: {
+        number: '4242424242424242',
+        exp_month: 12,
+        exp_year: 2034,
+        cvc: '314',
+      },
+      billing_details:{
+        email:'khushbu@inventam.com'
+      }
+    });
+
+
+   
   }
 }

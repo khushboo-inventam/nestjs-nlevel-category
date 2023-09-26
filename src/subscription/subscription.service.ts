@@ -26,8 +26,8 @@ export class SubscriptionService {
 
 
     let dataUser = {
-      email: 'smit011@yomail.com',
-      name: 'smit'
+      email: 'shailee@inventam.com',
+      name: 'shailee'
     }
 
     let customerId: string = '';
@@ -47,6 +47,7 @@ export class SubscriptionService {
         const stripUser = stripUserExist.data[0];
         customerId = stripUser.id;
       }
+
     }
 
     const planDtoData = await this.planRepo.findOne({
@@ -61,12 +62,15 @@ export class SubscriptionService {
         price_id: createSubscriptionDto.price_id
       }
     })
+    let trialEnd;
+    let trialPlanPrice;
 
     const currentSubscription = await this.subscriptionRepo.findOne(
       {
         where: {
           is_deleted: false,
-          user_id: request.user?.userId
+          //    user_id: request.user?.userId
+          customer: customerId
         }
       })
 
@@ -93,18 +97,28 @@ export class SubscriptionService {
     if (!currentSubscription || currentSubscription === undefined) {
       const giveFristLocalSubscription = await this.subscriptionRepo.create({
         ...createSubscriptionDto,
-        created_by: request.user.userId
+        customer: customerId
+        //created_by: request.user.userId
       })
 
 
       if (giveFristLocalSubscription && giveFristLocalSubscription !== undefined) {
 
-        const giveFristStripeSubscription = await this.stripeClient.subscriptions.create({
+        const stripSubscription = await this.stripeClient.subscriptions.create({
           customer: customerId,
           items: [
             { price: priceDtoData.stripe_price_id },
           ],
         })
+
+        // if (stripSubscription && stripSubscription !== undefined) {
+        //   await this.subscriptionRepo.update({
+        //     customer: customerId, is_deleted: false
+        //   }, {
+
+
+        //   })
+        // }
       }
     }
 
@@ -133,7 +147,22 @@ export class SubscriptionService {
       }, request)
 
     }
-    return this.changePlan({})
+    return this.changePlan({
+      subscription: currentSubscription,
+      newPlan: {
+        stripe_price_id: priceDtoData.stripe_price_id,
+        stripe_plan_id: priceDtoData.stripe_plan_id,
+        plan_id: planDtoData.plan_id,
+        price_id: priceDtoData.price_id,
+        change_plan_name: planDtoData.name,
+        amount: priceDtoData.unit_amount,
+        period_count: priceDtoData.interval_count,
+        period: priceDtoData.interval,
+      },
+      // promotion_code: promotionCode,
+      trialEnd,
+      trialPlanPrice
+    })
 
   }
 
@@ -285,8 +314,34 @@ export class SubscriptionService {
     return `This action returns a #${id} subscription`;
   }
 
-  update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {
-    return `This action updates a #${id} subscription`;
+  async update() {
+
+    let customerId = 'cus_Oi0Cdt3UDLAvow'
+    const subData  = (await this.stripeClient.subscriptions.list({ customer: customerId })).data[0]
+    console.log('subData', subData)
+    await this.subscriptionRepo.update({
+      customer: customerId, is_deleted: false
+    }, {
+
+      billing_cycle_anchor: subData.billing_cycle_anchor.toString(),
+      cancel_at: subData.cancel_at.toString(),
+    // cancel_at_period_end : subData.cancel_at_period_end,
+      // canceled_at : subData.canceled_at      .toString(),
+      created : subData.created.toString(),
+      currency : subData.currency,
+      current_period_end: subData.current_period_end.toString(),
+      current_period_start : subData.current_period_start.toString,
+      customer : subData.customer.toString(),
+      default_payment_method: subData.default_payment_method.toString(),
+      description : subData.description,
+      // discount : subData.discount,
+      ended_at : subData.ended_at.toString(),
+      metadata: subData.metadata.toString(),
+      schedule : subData.schedule.toString(),
+      start_date: subData.start_date.toString(),
+      status: subData.status.toString(),
+
+    })
   }
 
   remove(id: number) {

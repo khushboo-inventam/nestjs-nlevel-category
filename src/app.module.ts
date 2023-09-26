@@ -48,7 +48,8 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
     }),
 
     StripeModule.forRootAsync({
-      apiKey: 'sk_test_51Ljx7VSAmJCW9SjgwVaXt4ZONKiXKU5psO2EkRi9uVy4w1SefwSDKlOFlXtynqweoF4g7U9DWsnxKX0sIL4Mz9oL00hRK09mjk',
+      // apiKey: 'sk_test_51Ljx7VSAmJCW9SjgwVaXt4ZONKiXKU5psO2EkRi9uVy4w1SefwSDKlOFlXtynqweoF4g7U9DWsnxKX0sIL4Mz9oL00hRK09mjk',
+      apiKey: 'sk_test_51Nrgd1SHLpLnkvtAn7tVAYiSDZTYlQzMMBb60bVjj66CmPtHjq6soTKRKvPhNu6dafEvhDtsmYROVjzisaLrXw3p006jvMsP6O',
       config: { apiVersion: '2022-11-15' },
       // webhookConfig: {
       //   stripeWebhookSecret: configServiceObj.get<string>('stripe.stripe_webhook_key'),
