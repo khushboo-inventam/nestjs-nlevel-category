@@ -166,3 +166,16 @@ export const CHANGE_PASSWORD = {
 
 export const CONFIG_CONNECTION_OPTIONS = 'CONFIG_CONNECTION_OPTIONS';
 export const PASSWORD_SALT_ROUNDS = 10;
+
+
+
+
+export const SUBSCRIPTIONS = {
+  CANCEL_PLAN: 'Subscription cancelled successfully.',
+  NOT_CANCEL_FREE_PLAN: 'The free plan is not cancellable.',
+  FETCHED: 'Subscription`s detail has been fetched successfully.',
+  CREATED: 'Subscribe has been a successfully.',
+  WEBHOOK_BAD_REQUEST: 'Webhook not initialize  properly.',
+  UPDATED: 'Subscription has been update successfully.',
+  NOT_FOUND: 'Requested subscription not found.',
+};

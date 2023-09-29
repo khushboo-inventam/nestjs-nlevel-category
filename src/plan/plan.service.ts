@@ -7,12 +7,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { unixTimestamp } from 'src/common/pagination';
 import Stripe from 'stripe';
 import { STRIPE_TOKEN } from 'src/stripe/stripe-options.interface';
-import { PLAN } from 'src/common/global-constants';
+import { PLAN, PRICE } from 'src/common/global-constants';
+import { Price } from 'src/price/entities/price.entity';
 
 @Injectable()
 export class PlanService {
 
   constructor(@InjectRepository(Plan) private readonly repo: Repository<Plan>,
+  @InjectRepository(Price) private readonly priceRepo: Repository<Price>,
     @Inject(STRIPE_TOKEN) private readonly stripeClient: Stripe,
   ) { }
 
@@ -75,4 +77,26 @@ export class PlanService {
   remove(id: number) {
     return `This action removes a #${id} plan`;
   }
+
+  async findOnePrice(where) {
+    const priceData = await this.priceRepo.findOne(where);
+    if (!priceData || priceData === undefined) throw new HttpException(PRICE.NOT_FOUND, HttpStatus.NOT_FOUND);
+    const planData = await this.repo.findOne({where :{ stripe_plan_id: priceData.STRIPE, is_deleted: false, active: true }});
+    priceData.plan_name = planData.name;
+    priceData.plan_descriptions = planData.description;
+    priceData.images = planData.images;
+    priceData.metadata = planData.metadata;
+    
+    return priceData;
+  }
+
+  async getPlanNameByPrice(where) {
+    const priceData = await this.priceRepo.findOne(where);
+    if (!priceData || priceData === undefined) throw new HttpException(PRICE.NOT_FOUND, HttpStatus.NOT_FOUND);
+    const planData = await this.repo.findOne({where:{ stripe_plan_id: priceData.stripe_plan_id, is_deleted: false, active: true }});
+    return { plan_name: planData.name, plan_duration: `${priceData.interval_count}-${priceData.interval}` };
+  }
+
+   
+
 }

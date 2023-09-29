@@ -9,8 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { STRIPE_TOKEN } from 'src/stripe/stripe-options.interface';
 import { Subscription } from './entities/subscription.entity';
 import { PaymentMethod } from './../payment-methods/entities/payment-method.entity';
-import { PROMOCODE } from 'src/common/global-constants';
+import { PROMOCODE, SUBSCRIPTIONS } from 'src/common/global-constants';
 import { IGetStripeSubcription } from './interface/stripe-get-subscription';
+import { User } from 'src/users/entities/user.entity';
+import * as moment from 'moment';
+
 
 @Injectable()
 export class SubscriptionService {
@@ -20,6 +23,7 @@ export class SubscriptionService {
     @InjectRepository(Plan) private readonly planRepo: Repository<Plan>,
     @InjectRepository(Subscription) private readonly subscriptionRepo: Repository<Subscription>,
     @InjectRepository(PaymentMethod) private readonly paymentMethodRepo: Repository<PaymentMethod>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
     @Inject(STRIPE_TOKEN) private readonly stripeClient: Stripe,
   ) { }
 
@@ -358,5 +362,267 @@ export class SubscriptionService {
 
   remove(id: number) {
     return `This action removes a #${id} subscription`;
+  }
+
+  async updateSubscriptionWebhook(updatedSub, perviousAttribute?) {
+    if (!updatedSub || updatedSub === undefined)
+      throw new HttpException('No Subscription Data found in webhook ', HttpStatus.NOT_FOUND);
+  
+
+    const customerData = await this.userRepo.findOne({
+    where: {    email_verified: true,
+    is_deleted: false,
+    stripe_user_id: updatedSub.customer,}
+    });
+
+    if (!customerData || customerData === undefined)
+      throw new HttpException('No customer found  ', HttpStatus.NOT_FOUND);
+
+    let userDetailId;
+    const currentSubscription = await this.subscriptionRepo.findOne({where: { user_id: customerData.user_id, is_deleted: false }});
+    if (currentSubscription && currentSubscription !== undefined) userDetailId = currentSubscription.user_id;
+
+    let scheduler;
+    if (updatedSub.schedule != null && updatedSub.schedule !== undefined)
+      scheduler = await this.stripeClient.subscriptionSchedules.retrieve(updatedSub.schedule);
+    if (scheduler && scheduler !== undefined && scheduler !== null) {
+      if (scheduler.phases[0].end_date <= +moment().unix().toString() && scheduler.status === 'active') {
+        await this.stripeClient.subscriptionSchedules.release(updatedSub.schedule);
+      }
+    }
+
+    if (updatedSub.status === 'active') {
+      // TODO : If any another plan then free and  default payment method available,status active plus scheduler available
+      // then   1> release scheduler  2> assigned  new plan
+
+      const newPriceDetail = await this.planRepo.getPlanNameByPrice({
+        is_deleted: false,
+        stripe_price_id: updatedSub.plan.id,
+        active: true,
+      });
+      if (newPriceDetail && newPriceDetail !== undefined && newPriceDetail !== null) {
+        if (
+          (!updatedSub.default_payment_method || updatedSub.default_payment_method === undefined) &&
+         // newPriceDetail.plan_name !== PLANS_NAME.FREE
+        ) {
+          
+          await this.checkAndUpdateCancelSubscription(updatedSub);
+        } else {
+          const latestSubData = await this.stripeClient.subscriptions.retrieve(updatedSub.id);
+
+          const latestPriceDetail = await this.priceRepo.findOne({
+          where :{is_deleted: false,
+          stripe_price_id: latestSubData.items.data[0].price.id,
+          active: true,}
+          });
+          await this.userSubscriptionUpdate(latestPriceDetail, latestSubData);
+          
+        }
+      }
+    } else if (updatedSub.status === 'trialing') {
+    
+      const latestSubData = await this.stripeClient.subscriptions.retrieve(updatedSub.id);
+      const latestPriceDetail = await this.priceRepo.findOne({
+        where :{is_deleted: false,
+        stripe_price_id: latestSubData.items.data[0].price.id,
+        active: true,}
+      });
+      await this.userSubscriptionUpdate(latestPriceDetail, latestSubData);
+     
+    } else if (updatedSub.status === 'canceled') {
+      await this.checkAndUpdateCancelSubscription(updatedSub);
+
+    } else if (updatedSub.status === 'paused') {
+      if (perviousAttribute?.status === 'trialing') await this.checkAndUpdateCancelSubscription(updatedSub);
+    }
+    return true;
+  }
+
+  async webhookCreate(request) {
+    const endpointSecret = this.configService.get('app.stripe_webhook_key');
+    const sig = request.headers['stripe-signature'];
+
+    let event: Stripe.Event;
+
+    try {
+      const stripePayload = request.rawBody;
+     
+      // eslint-disable-next-line prefer-const
+      event = await this.stripeClient.webhooks.constructEvent(
+        stripePayload?.toString(),
+        sig?.toString(),
+        endpointSecret,
+      );
+    } catch (err) {
+      
+      throw new HttpException(SUBSCRIPTIONS.WEBHOOK_BAD_REQUEST, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case 'customer.subscription.updated':
+        // const subscriptionUpdate = event.data.object;
+        await this.updateSubscriptionWebhook(event.data.object, event.data.previous_attributes);
+        break;
+      case 'customer.subscription.deleted':
+        await this.updateSubscriptionWebhook(event.data.object);
+        break;
+      case 'customer.subscription.paused':
+        await this.updateSubscriptionWebhook(event.data.object, event.data.previous_attributes);
+        break;
+      case 'invoice.paid':
+      //  await this.updateSubscriptionAfterPayment(event.data.object);
+        break;
+      // case 'product.created':
+      //   await this.plansService.planWebHookCreateUpdate(event.data.object);
+      //   break;
+      // case 'product.deleted':
+      //   await this.plansService.planWebHookCreateUpdate(event.data.object);
+      //   break;
+      // case 'product.updated':
+      //   await this.plansService.planWebHookCreateUpdate(event.data.object);
+      //   break;
+      // case 'price.created':
+      //   await this.plansService.priceWebHookCreateUpdate(event.data.object);
+      //   break;
+      // case 'price.deleted':
+      //   await this.plansService.priceWebHookCreateUpdate(event.data.object);
+      //   break;
+      // case 'price.updated':
+      //   await this.plansService.priceWebHookCreateUpdate(event.data.object);
+      //   break;
+      // case 'payment_intent.payment_failed':
+      //   break;
+      case 'invoice.payment_failed':
+      //  await this.paymentFailedAtSubscription(event.data.object);
+        break;
+      case 'invoice.payment_succeeded':
+        //  await this.updateUserCreditBalance(event.data.object);
+        // Then define and call a function to handle the event price.updated
+        break;
+      // case 'customer.subscription.trial_will_end':
+      //   await this.goodByeTrialSubscription(event.data.object);
+      //   break;
+      default:
+    }
+  }
+  async findDraftInvoiceSelectedPlan(changeSubscriptionDto, request) {
+    const prorationDate = Math.floor(Date.now() / 1000);
+
+    const subscriptionData = await this.subscriptionRepo.findOne({
+     where:{ user_id: request.user.userId,
+      is_deleted: false,
+      canceled_at: null,}
+    });
+    if (!subscriptionData) return false;
+
+    const currentPlanDetail = await this.planRepo.findOne({
+    where: {  is_deleted: false,
+      active: true,
+      plan_id: subscriptionData.plan_id,}
+    });
+    const currentPriceDetail = await this.priceRepo.findOne({
+      where:{is_deleted: false,
+      active: true,
+      price_id: subscriptionData.price_id,}
+    });
+    const currentDetail = {
+      plan_id: currentPlanDetail.plan_id,
+      stripe_plan_id: currentPlanDetail.stripe_plan_id,
+      name: currentPlanDetail.name,
+      description: currentPlanDetail.description,
+      price_id: currentPriceDetail.price_id,
+      stripe_price_id: currentPriceDetail.stripe_price_id,
+      unit_amount: currentPriceDetail.unit_amount,
+    };
+
+    const changePlanDetail = await this.planRepo.findOne({
+      where:{is_deleted: false,
+      active: true,
+      plan_id: changeSubscriptionDto.plan_id,}
+    });
+    const changePriceDetail = await this.priceRepo.findOne({
+      where :{is_deleted: false,
+      active: true,
+      price_id: changeSubscriptionDto.price_id,}
+    });
+
+    const changeDetail = {
+      plan_id: changePlanDetail.plan_id,
+      stripe_plan_id: changePlanDetail.stripe_plan_id,
+      name: changePlanDetail.name,
+      description: changePlanDetail.description,
+      price_id: changePriceDetail.price_id,
+      stripe_price_id: changePriceDetail.stripe_price_id,
+      unit_amount: changePriceDetail.unit_amount,
+    };
+
+    const subscription = await this.stripeClient.subscriptions.retrieve(subscriptionData.stripe_subscription_id);
+
+    const priceDetail = await this.priceRepo.findOne({
+      where :{is_deleted: false,
+      active: true,
+      price_id: changeSubscriptionDto.price_id,}
+    });
+
+    // See what the next invoice would look like with a price switch
+    // and proration set:
+    const items = [
+      {
+        id: subscription.items.data[0].id,
+        price: priceDetail.stripe_price_id, // 'price_1Lomn2LFNE9bOCjOiwOA38BT', // Switch to new price
+      },
+    ];
+    let couponCode;
+    let couponSuccessMessage = null;
+    if (typeof changeSubscriptionDto === 'object' && 'promotion_code' in changeSubscriptionDto) {
+      const couponData: any = await this.stripeClient.promotionCodes.list({
+        code: changeSubscriptionDto.promotion_code,
+        active: true,
+      });
+      if (!couponData || couponData === undefined || couponData.data.length === 0)
+        throw new HttpException(PROMOCODE.INVALID, HttpStatus.BAD_REQUEST);
+      // eslint-disable-next-line prefer-const
+      couponCode = { coupon: couponData.data[0].coupon.id };
+      couponSuccessMessage = PROMOCODE.APPLIED;
+    }
+
+    const invoice = await this.stripeClient.invoices.retrieveUpcoming({
+      customer: subscriptionData.customer,
+      subscription: subscriptionData.stripe_subscription_id,
+      subscription_items: items,
+      subscription_proration_date: prorationDate,
+      // subscription_proration_behavior: 'always_invoice',
+      subscription_trial_end: 'now',
+      subscription_billing_cycle_anchor: 'now',
+      ...couponCode,
+    });
+
+    return {
+      ...invoice,
+      current_detail: currentDetail,
+      change_detail: changeDetail,
+      coupon_message: couponSuccessMessage,
+    };
+  }
+
+
+  async checkAndUpdateCancelSubscription(updatedSub) {
+ 
+ 
+      const userStipreDetail = await this.stripeClient.subscriptions.list({
+        customer: updatedSub.customer,
+        status: 'active',
+      });
+
+      if (!userStipreDetail || userStipreDetail === undefined || !userStipreDetail?.data?.length) {
+        const userDetail = await this.userRepo.findOne({where: { is_deleted: false, stripe_user_id: updatedSub.customer }});
+        // const userDetail = await this.userRepo.findOne({where: { is_deleted: false, stripe_user_id: updatedSub.customer }});
+
+        // give free subscription to them
+        // await this.save({ user: { userId: userDetail.id } }, '');
+ 
+      }
+   
   }
 }

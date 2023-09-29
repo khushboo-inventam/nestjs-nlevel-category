@@ -93,4 +93,8 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   other_social_link: string;
+
+
+  @Column()
+  stripe_user_id: string;
 }
