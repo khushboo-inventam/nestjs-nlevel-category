@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { CategoryModule } from "./category/category.module";
 import { AllExceptionsFilter } from "./common/all-exceptions.filter";
-import { APP_FILTER } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { ItemModule } from './item/item.module';
 import { DynamicColumnsModule } from './dynamic-columns/dynamic-columns.module';
 import { ItemDetailsModule } from './item-details/item-details.module';
@@ -17,9 +17,18 @@ import { PriceModule } from './price/price.module';
 import { StripeModule } from "./stripe/stripe.module";
 import { SubscriptionModule } from './subscription/subscription.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
+import { UserSessionsModule } from "./user-sessions/user-sessions.module";
+import appConfig from "./app.config";
+import { JwtAuthGuard } from "./jwt/jwt-auth.guard";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig],
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
         return {
@@ -65,7 +74,10 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
     PlanModule,
     PriceModule,
     SubscriptionModule,
-    PaymentMethodsModule
+    PaymentMethodsModule,
+    AuthModule,
+    UsersModule,
+    UserSessionsModule
   ],
   controllers: [AppController],
   providers: [
@@ -73,7 +85,12 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     AppService,
   ],
+
 })
 export class AppModule { }

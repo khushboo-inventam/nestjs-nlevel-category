@@ -27,4 +27,5 @@ export default new DataSource({
     //   autoLoadEntities: true,
     //  entities: ['src/**/entities/*.ts'],
     migrations: ['src/common/migrations/*.ts'],
+    // migrations: ['src/common/migrations/**/*{.ts,.js}'],
 });

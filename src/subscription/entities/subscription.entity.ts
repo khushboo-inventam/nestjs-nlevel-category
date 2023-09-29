@@ -14,32 +14,34 @@ export class Subscription {
     plan_id: number;
 
     @Column()
-    price_id: number; 
+    price_id: number;
 
     @Column()
     user_id: number;
 
     @Column()
-    billing_cycle_anchor: string;
+    billing_cycle_anchor: number;
 
     @Column()
-    cancel_at: string;
+    cancel_at: number;
 
+    @Column()
+    cancel_at_period_end: boolean;
 
     @Column({ default: false })
     canceled_at: boolean;
 
     @Column()
-    created: string;
+    created: number;
 
     @Column()
     currency: string;
 
     @Column()
-    current_period_end: string;
+    current_period_end: number;
 
     @Column()
-    current_period_start: string;
+    current_period_start: number;
 
     @Column()
     customer: string;
@@ -53,9 +55,8 @@ export class Subscription {
     @Column()
     discount: string;
 
-
     @Column()
-    ended_at: string;
+    ended_at: number;
 
     @Column()
     metadata: string;
@@ -64,7 +65,7 @@ export class Subscription {
     schedule: string;
 
     @Column()
-    start_date: string;
+    start_date: number;
 
     @Column()
     status: string;

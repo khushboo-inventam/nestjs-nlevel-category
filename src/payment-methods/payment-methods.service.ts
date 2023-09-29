@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 import { PaymentMethod } from './entities/payment-method.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-
+let customerId: string = '';
 
 @Injectable()
 export class PaymentMethodsService {
@@ -18,11 +18,12 @@ export class PaymentMethodsService {
 
   async create(createPaymentMethodDto: CreatePaymentMethodDto, request) {
     // const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
-    const stripeCustomerId = { stripe_user_id: '' }
-    const addNewPayment = await this.stripeClient.paymentMethods
-      .attach(createPaymentMethodDto.payment_method_id, {
-        customer: stripeCustomerId.stripe_user_id,
-      })
+    const stripeCustomerId = { stripe_user_id: 'cus_Oi0Cdt3UDLAvow' }
+    // const addNewPayment  = await  this.stripeClient.paymentMethods.retrieve('pm_1NvaH0SHLpLnkvtAHOTmZc58')
+   const addNewPayment = await this.stripeClient.paymentMethods
+        .attach(createPaymentMethodDto.payment_method_id, {
+          customer: stripeCustomerId.stripe_user_id,
+        })
       .then(async (paymentMethodData) => {
         // console.log('data', paymentMethodData);
         const addNewPaymentDetail = await this.paymentMethodRepo.create({
@@ -54,37 +55,106 @@ export class PaymentMethodsService {
 
   }
 
-  findAll() {
-    return `This action returns all paymentMethods`;
+  async addUserPaymentIntent(createUserPaymentIntentDto, request) {
+    // const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
+
+    const {
+      payment_method_types: paymentMethodTypes,
+      amount,
+      payment_method_id: paymentMethodId,
+    } = createUserPaymentIntentDto;
+
+    const dataAdd = {
+      payment_method_types: [paymentMethodTypes],
+      amount: parseInt(`${+amount * 100}`, 10),
+      currency: 'usd',
+    };
+    if (paymentMethodId && paymentMethodId !== undefined) {
+      Object.assign(dataAdd, { payment_method: paymentMethodId });
+    }
+    // console.log('dataAdd', dataAdd);
+    const addNewPaymentIntent = await this.stripeClient.paymentIntents.create({
+      ...dataAdd,
+      setup_future_usage: 'off_session',
+      // customer: stripeCustomerId.stripe_user_id,
+      customer: customerId
+    });
+    return addNewPaymentIntent;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} paymentMethod`;
+  async addUserSetupPaymentIntent(createUserPaymentIntentDto, request) {
+    // const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
+
+    const { payment_method_types: paymentMethodTypes, payment_method_id: paymentMethodId } = createUserPaymentIntentDto;
+
+    const dataAdd = {
+      payment_method_types: [paymentMethodTypes],
+    };
+    if (paymentMethodId && paymentMethodId !== undefined) {
+      Object.assign(dataAdd, { payment_method: paymentMethodId });
+    }
+    // console.log('dataAdd', dataAdd);
+    const addNewPaymentIntent = await this.stripeClient.setupIntents.create({
+      ...dataAdd,
+      usage: 'off_session',
+      //  customer: stripeCustomerId.stripe_user_id,
+      customer: customerId
+    });
+    return addNewPaymentIntent;
   }
 
-  update(id: number, updatePaymentMethodDto: UpdatePaymentMethodDto) {
-    return `This action updates a #${id} paymentMethod`;
+  async findAll(request) {
+    return this.paymentMethodRepo.find({ where: { user_id: request.user.userId, is_deleted: false } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} paymentMethod`;
+  async findOne(where) {
+    return this.paymentMethodRepo.findOne(where);
+  }
+
+  async findPaymentAttempt(request) {
+    // const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
+    const timezoneDiff = new Date(1970, 0, 1).getTime();
+    const today = new Date();
+    const currentUT = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() - timezoneDiff;
+    const paymentIntents = await this.stripeClient.charges.search({
+      // query: `status:'failed' AND customer:'${stripeCustomerId.stripe_user_id}' AND currency:'usd' AND created>${
+      //   currentUT / 1000
+      // }`,
+      // query: `customer:'${stripeCustomerId.stripe_user_id}' AND currency:'usd' AND created>${currentUT / 1000}`,
+      query: `customer:'${customerId}' AND currency:'usd' AND created>${currentUT / 1000}`,
+      limit: 100,
+    });
+    return paymentIntents.data;
+  }
+
+  async remove(where, request) {
+    const whereCondition = {
+      is_deleted: false,
+    };
+    if (where) Object.assign(whereCondition, where);
+    return this.paymentMethodRepo.update(where, {
+      is_deleted: true,
+      // deleted_at: new Date(),
+      deleted_by: request.user.userId,
+    });
   }
 
   async createPaymentMethod(createPaymentMethodDto: CreatePaymentMethodDto, request) {
     const paymentMethod = await this.stripeClient.paymentMethods.create({
       type: 'card',
+
       card: {
-        number: '4242424242424242',
+        number: '4000056655665556',
         exp_month: 12,
         exp_year: 2034,
         cvc: '314',
       },
-      billing_details:{
-        email:'khushbu@inventam.com'
+      billing_details: {
+        email: 'khushbu@inventam.com'
       }
     });
 
 
-   
+
   }
 }

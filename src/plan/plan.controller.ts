@@ -3,12 +3,21 @@ import { PlanService } from './plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { AllExceptionsFilter } from 'src/common/all-exceptions.filter';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiInternalServerErrorResponse, ApiSecurity, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ERROR } from 'src/common/global-constants';
 
 
+@ApiSecurity('access_token')
+
+@UsePipes(new ValidationPipe({ transform: true }))
+@ApiInternalServerErrorResponse({
+  description: ERROR.INTERNAL_SERVER_ERROR,
+})
+@ApiUnauthorizedResponse({
+  description: ERROR.UNAUTHORIZED_ERROR,
+})
 
 @UseFilters(new AllExceptionsFilter())
-@UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("plan")
 
 @Controller('plan')

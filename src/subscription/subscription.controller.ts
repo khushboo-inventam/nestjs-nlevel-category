@@ -3,8 +3,18 @@ import { SubscriptionService } from './subscription.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { AllExceptionsFilter } from 'src/common/all-exceptions.filter';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiInternalServerErrorResponse, ApiSecurity, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ERROR } from 'src/common/global-constants';
 
+
+@ApiSecurity('access_token')
+
+@ApiInternalServerErrorResponse({
+  description: ERROR.INTERNAL_SERVER_ERROR,
+})
+@ApiUnauthorizedResponse({
+  description: ERROR.UNAUTHORIZED_ERROR,
+})
 @UseFilters(new AllExceptionsFilter())
 @UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("subscription")

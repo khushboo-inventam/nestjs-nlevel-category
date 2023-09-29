@@ -20,6 +20,7 @@ export class Subscription1692947162507 implements MigrationInterface {
                         name: "stripe_subscription_id",
                         type: "varchar",
                         length: "255",
+                        isNullable: true,
                     },
                     {
                         name: "plan_id",
@@ -58,14 +59,12 @@ export class Subscription1692947162507 implements MigrationInterface {
                     },
                     {
                         name: "canceled_at",
-                        type: "varchar",
-                        length: "255",
+                        type: "integer",
                         isNullable: true,
                     },
                     {
                         name: "created",
-                        type: "varchar",
-                        length: "255",
+                        type: "integer",
                         isNullable: true,
                     },
                     {
@@ -76,14 +75,12 @@ export class Subscription1692947162507 implements MigrationInterface {
                     },
                     {
                         name: "current_period_end",
-                        type: "varchar",
-                        length: "255",
+                        type: "integer",
                         isNullable: true,
                     },
                     {
                         name: "current_period_start",
-                        type: "varchar",
-                        length: "255",
+                        type: "integer",
                         isNullable: true,
                     },
                     {
@@ -113,8 +110,7 @@ export class Subscription1692947162507 implements MigrationInterface {
 
                     {
                         name: "ended_at",
-                        type: "varchar",
-                        length: "255",
+                        type: "integer",
                         isNullable: true,
                     },
                     {
@@ -132,8 +128,7 @@ export class Subscription1692947162507 implements MigrationInterface {
                     },
                     {
                         name: "start_date",
-                        type: "varchar",
-                        length: "255",
+                        type: "integer",
                         isNullable: true,
                     },
                     {

@@ -93,3 +93,76 @@ export const PROMOCODE = {
   USER_MAX_REDEMPTIONS: 'The maximum number of redemptions equals the number of users.',
   APPLIED: 'Promo code has been apply successfully.',
 };
+
+export const PAYMENT = {
+  CREATED: 'Payment has been done successfully.',
+  FETCHED: 'Payment detail has been fetched successfully.',
+  USER_CARD_LIMITS: 'There is a limit of three cards that can be added.',
+  PAYMENT_INTENT_CREATED: 'Payment intent has been done successfully.',
+  DELETED: 'Payment method has been deleted successfully.',
+  NOT_FOUND: 'Requested payment method not found.',
+  ALREADY_USE_IN_ACTIVE_SUBSCRIPTION: `Payment method already use in active subscription you can't delete it .`,
+};
+
+export const LOGIN = {
+  INVALID_CRED: 'Invalid login credentials.',
+  USER_NOT_FOUND: 'User not found with given credentials.',
+  REFRESH_TOKEN_MALFORMED: 'Refresh token malformed.',
+  REFRESH_TOKEN_NOT_FOUND: 'Refresh token not found.',
+  REFRESH_TOKEN_REVOKED:
+    'We noticed a new sign-in to your account in another device so your session has been expired.',
+  REFRESH_TOKEN_EXPIRED: 'Your session has been expired.',
+  SUCCESS: 'Welcome to Photographer Portal!',
+  LOGOUT: "You've been logged out, fare thee well.",
+  MULTIPLE_NOT_ALLOWED:
+    'Sorry dopplegangers, only one login per account at a time.',
+  USER_NOT_CONNECT_WITH_BB:
+    'You are not connected to BattleBards, which is why you are unable to sync your data',
+  USER_NOT_IN_BB: 'User not found in battelbards.com.',
+  RESET_PASSWORD: 'Please reset your password.',
+};
+
+export const REGISTER = {
+  SUCCESS: 'Registration critical success, welcome!',
+  USER_EXIST:
+    'Account already exists with the given email, please provide another email.',
+  USER_NOT_REGISTERED: 'No user registered with these credentials found.',
+  EMAIL_FAIL: 'We fumbled; email send failed, please try again later.',
+  EMAIL_SENDED_RECENTLY: 'Email just sent, please try again later.',
+  EMAIL_UNVERIFIED: 'Email not verified. Please verify email to continue.',
+  EMAIL_SENT_SUCCESS: 'Please check your inbox to get activation link.',
+  INVALID_VERIFICATION_LINK: 'Invalid activation link.',
+  EMAIL_VERIFICATION_SUCCESS: "Success!  You've verified your account.",
+  EMAIL_VERIFICATION_EXPIRED:
+    'Account activation link expired. Please resend activation email.',
+  EMAIL_ALREADY_VERIFIED: 'Email has already been verified.',
+  DEMO_LINK_EXPIRED: 'Link expired.',
+  TRIAL_INVITATION_SENT_SUCCESS:
+    'Invitations for the trial has been sent to the users successfully',
+  TRIAL_INVITATION_ASSIGN_USER_SUCCESSFULLY:
+    'Invitations for the trial has been assign to the users successfully',
+  TRIAL_INVALID_CRED: 'Invalid credentials.',
+  ALREADY_USE_TRIAL_PLAN: 'Account already use trial plan. ',
+};
+
+export const RESET_PASSWORD = {
+  INVALID_LINK: 'Invalid reset password link.',
+  LINK_EXPIRED: 'Reset Password link expired.',
+  SUCCESS: 'Your password has been reset.',
+  EMAIL_SENT_SUCCESS: 'Password reset link sent, please check your inbox.',
+};
+
+
+export const CHANGE_PASSWORD = {
+  PASSWORD_VALIDATION:
+    'Password must be a combination of number, lowercase and uppercase and special character.',
+  NEW_PASSWORD_VALIDATION:
+    'New password must be a combination of number, lowercase and uppercase and special character.',
+  PASSWORD_NOT_MATCH: 'Current password do not match.',
+  NEW_PASSWORD_MATCH_CURRENT:
+    'Please choose a password that is different from your current password.',
+  SUCCESS: 'Your password has been changed successfully.',
+};
+
+export const CONFIG_CONNECTION_OPTIONS = 'CONFIG_CONNECTION_OPTIONS';
+export const PASSWORD_SALT_ROUNDS = 10;

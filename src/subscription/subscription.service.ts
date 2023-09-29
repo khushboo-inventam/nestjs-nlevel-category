@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
-import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+// import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { Repository } from 'typeorm';
 import { Price } from 'src/price/entities/price.entity';
 import { Plan } from 'src/plan/entities/plan.entity';
@@ -10,6 +10,7 @@ import { STRIPE_TOKEN } from 'src/stripe/stripe-options.interface';
 import { Subscription } from './entities/subscription.entity';
 import { PaymentMethod } from './../payment-methods/entities/payment-method.entity';
 import { PROMOCODE } from 'src/common/global-constants';
+import { IGetStripeSubcription } from './interface/stripe-get-subscription';
 
 @Injectable()
 export class SubscriptionService {
@@ -75,6 +76,7 @@ export class SubscriptionService {
       })
 
 
+    const currentStripSubscription = await this.stripeClient.subscriptions.list({ customer: customerId })
     if (typeof createSubscriptionDto === 'object' && 'payment_method_id' in createSubscriptionDto) {
       const paymentDetails = await this.paymentMethodRepo.findOne({
         where: {
@@ -95,11 +97,18 @@ export class SubscriptionService {
     }
     // if customer has no  subscription then give him 
     if (!currentSubscription || currentSubscription === undefined) {
-      const giveFristLocalSubscription = await this.subscriptionRepo.create({
-        ...createSubscriptionDto,
-        customer: customerId
-        //created_by: request.user.userId
-      })
+      let giveFristLocalSubscription;
+      try {
+
+        giveFristLocalSubscription = await this.subscriptionRepo.save({
+          ...createSubscriptionDto,
+          customer: customerId,
+          user_id: 1,
+          created_at: 'f'
+        })
+      } catch (error) {
+        console.log('r', error)
+      }
 
 
       if (giveFristLocalSubscription && giveFristLocalSubscription !== undefined) {
@@ -139,16 +148,16 @@ export class SubscriptionService {
     })
 
 
-    if (currentPriceData.unit_amount >= priceDtoData.unit_amount) {
-      // downgarde plan 
-      return this.downgradePlan({
-        currentSubscription,
+    // if (currentPriceData.unit_amount >= priceDtoData.unit_amount) {
+    //   // downgarde plan 
+    //   return this.downgradePlan({
+    //     currentSubscription,
 
-      }, request)
+    //   }, request)
 
-    }
+    // }
     return this.changePlan({
-      subscription: currentSubscription,
+      subscription: currentStripSubscription,
       newPlan: {
         stripe_price_id: priceDtoData.stripe_price_id,
         stripe_plan_id: priceDtoData.stripe_plan_id,
@@ -161,7 +170,7 @@ export class SubscriptionService {
       },
       // promotion_code: promotionCode,
       trialEnd,
-      trialPlanPrice
+      trialPlanPrice : priceDtoData.stripe_price_id
     })
 
   }
@@ -258,10 +267,11 @@ export class SubscriptionService {
     }
     // Check the product is applicable for particular promocode .
     const prorationDate = Math.floor(Date.now() / 1000);
-
-    let updatedSub = await this.stripeClient.subscriptions.update(subscription.stripe_subscription_id, {
+    console.log('subscription', subscription)
+    const stripeSubscription = subscription.data[0]
+    let updatedSub = await this.stripeClient.subscriptions.update(stripeSubscription.id, {
       off_session: true,
-      items: [{ id: subscription.items.data[0].id, price: trialPlanPrice }],
+      items: [{ id: stripeSubscription.items.data[0].id, price: trialPlanPrice }],
       ...trialEnd,
     });
 
@@ -317,29 +327,31 @@ export class SubscriptionService {
   async update() {
 
     let customerId = 'cus_Oi0Cdt3UDLAvow'
-    const subData  = (await this.stripeClient.subscriptions.list({ customer: customerId })).data[0]
-    console.log('subData', subData)
+    const subData = (await this.stripeClient.subscriptions.list({ customer: customerId })).data[0]
+
+    let changeData: IGetStripeSubcription
+
     await this.subscriptionRepo.update({
       customer: customerId, is_deleted: false
     }, {
 
-      billing_cycle_anchor: subData.billing_cycle_anchor.toString(),
-      cancel_at: subData.cancel_at.toString(),
-    // cancel_at_period_end : subData.cancel_at_period_end,
-      // canceled_at : subData.canceled_at      .toString(),
-      created : subData.created.toString(),
-      currency : subData.currency,
-      current_period_end: subData.current_period_end.toString(),
-      current_period_start : subData.current_period_start.toString,
-      customer : subData.customer.toString(),
-      default_payment_method: subData.default_payment_method.toString(),
-      description : subData.description,
+      billing_cycle_anchor: subData.billing_cycle_anchor,
+      cancel_at: subData.cancel_at,
+      cancel_at_period_end: subData.cancel_at_period_end,
+      // canceled_at : subData.canceled_at,
+      created: subData.created,
+      currency: subData.currency,
+      current_period_end: subData.current_period_end,
+      current_period_start: subData.current_period_start,
+      // customer : subData.customer.toString(),
+      // default_payment_method: subData.default_payment_method.toString(),
+      description: subData.description,
       // discount : subData.discount,
-      ended_at : subData.ended_at.toString(),
-      metadata: subData.metadata.toString(),
-      schedule : subData.schedule.toString(),
-      start_date: subData.start_date.toString(),
-      status: subData.status.toString(),
+      ended_at: subData.ended_at,
+      // metadata: subData.metadata,
+      // schedule : subData.schedule.toString(),
+      start_date: subData.start_date,
+      status: subData.status,
 
     })
   }
