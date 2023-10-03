@@ -6,13 +6,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Price } from 'src/price/entities/price.entity';
 import { Subscription } from './entities/subscription.entity';
 import { PaymentMethod } from 'src/payment-methods/entities/payment-method.entity';
+import { PlanService } from 'src/plan/plan.service';
+import { PriceService } from 'src/price/price.service';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 
 @Module({
   imports: [TypeOrmModule.forFeature([Plan]), TypeOrmModule.forFeature([Price]), TypeOrmModule.forFeature([Subscription]),
-  TypeOrmModule.forFeature([PaymentMethod])
+  TypeOrmModule.forFeature([PaymentMethod]), TypeOrmModule.forFeature([User])
   ],
   controllers: [SubscriptionController],
-  providers: [SubscriptionService]
+  providers: [SubscriptionService,PlanService,PriceService, UsersService ]
 })
 export class SubscriptionModule { }

@@ -15,6 +15,9 @@ export class Plan {
     @Column()
     description: string;
 
+    @Column()
+    images: string;
+
      
     @Column({type:'jsonb'})
     metadata: string;

@@ -1,3 +1,4 @@
+
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
@@ -10,17 +11,44 @@ import { STRIPE_TOKEN } from 'src/stripe/stripe-options.interface';
 import { PLAN, PRICE } from 'src/common/global-constants';
 import { Price } from 'src/price/entities/price.entity';
 
+
+
+
+interface priceStripeData {
+
+  price_id: number;
+  plan_id: number;
+  currency: string;
+  unit_amount: string;
+  interval: string;
+  interval_count: number;
+  active: boolean;
+  stripe_plan_id: string;
+  stripe_price_id: string;
+  is_deleted: boolean;
+  created_by: string;
+  updated_by: string;
+  deleted_by: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  plan_name?: string;
+  plan_descriptions?: string;
+  images?: string;
+  metadata?: string;
+
+}
 @Injectable()
 export class PlanService {
 
   constructor(@InjectRepository(Plan) private readonly repo: Repository<Plan>,
-  @InjectRepository(Price) private readonly priceRepo: Repository<Price>,
+    @InjectRepository(Price) private readonly priceRepo: Repository<Price>,
     @Inject(STRIPE_TOKEN) private readonly stripeClient: Stripe,
   ) { }
 
   async create(createPlanDto: CreatePlanDto) {
     const alreadyExist = await this.repo.find({ where: { is_deleted: false, name: createPlanDto.name } })
-    console.log('alreadyExist', alreadyExist)
+
     if (alreadyExist && alreadyExist.length > 0) throw new HttpException(PLAN.ALREADY_EXIST_PLAN, HttpStatus.UNPROCESSABLE_ENTITY);
     let data
     try {
@@ -79,24 +107,24 @@ export class PlanService {
   }
 
   async findOnePrice(where) {
-    const priceData = await this.priceRepo.findOne(where);
+    let priceData: priceStripeData = await this.priceRepo.findOne(where);
     if (!priceData || priceData === undefined) throw new HttpException(PRICE.NOT_FOUND, HttpStatus.NOT_FOUND);
-    const planData = await this.repo.findOne({where :{ stripe_plan_id: priceData.STRIPE, is_deleted: false, active: true }});
+    const planData = await this.repo.findOne({ where: { stripe_plan_id: priceData.stripe_price_id, is_deleted: false, active: true } });
     priceData.plan_name = planData.name;
     priceData.plan_descriptions = planData.description;
     priceData.images = planData.images;
     priceData.metadata = planData.metadata;
-    
+
     return priceData;
   }
 
   async getPlanNameByPrice(where) {
     const priceData = await this.priceRepo.findOne(where);
     if (!priceData || priceData === undefined) throw new HttpException(PRICE.NOT_FOUND, HttpStatus.NOT_FOUND);
-    const planData = await this.repo.findOne({where:{ stripe_plan_id: priceData.stripe_plan_id, is_deleted: false, active: true }});
-    return { plan_name: planData.name, plan_duration: `${priceData.interval_count}-${priceData.interval}` };
+    const planData = await this.repo.findOne({ where: { stripe_plan_id: priceData.stripe_plan_id, is_deleted: false, active: true } });
+    return { plan_name: planData.name, plan_duration: `${priceData.interval_count}-${priceData.interval}`, unit_amount : +priceData.unit_amount };
   }
 
-   
+
 
 }

@@ -25,11 +25,11 @@ export class Subscription {
     @Column()
     cancel_at: number;
 
-    @Column()
+    @Column({ default: false })
     cancel_at_period_end: boolean;
 
-    @Column({ default: false })
-    canceled_at: boolean;
+    @Column()
+    canceled_at: number;
 
     @Column()
     created: number;
