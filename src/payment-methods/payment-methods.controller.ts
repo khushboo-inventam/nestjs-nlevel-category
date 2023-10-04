@@ -3,12 +3,13 @@ import { PaymentMethodsService } from './payment-methods.service';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
 import { AllExceptionsFilter } from 'src/common/all-exceptions.filter';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { PAYMENT } from 'src/common/global-constants';
 import { GetAllUserPaymentMethodResponse, UserPaymentMethodResponse } from './dto/user-payment-method-response.dto';
 import { CreateUserPaymentIntentDto } from './dto/create-user-payment-intent.dto';
 
 
+@ApiSecurity('access_token')
 @UseFilters(new AllExceptionsFilter())
 @UsePipes(new ValidationPipe({ transform: true }))
 @ApiTags("payment-methods")

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
 import { UpdatePaymentMethodDto } from './dto/update-payment-method.dto';
 import { STRIPE_TOKEN } from 'src/stripe/stripe-options.interface';
@@ -6,13 +6,18 @@ import Stripe from 'stripe';
 import { PaymentMethod } from './entities/payment-method.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 let customerId: string = '';
 
 @Injectable()
 export class PaymentMethodsService {
 
   constructor(@Inject(STRIPE_TOKEN) private readonly stripeClient: Stripe,
-    @InjectRepository(PaymentMethod) private readonly paymentMethodRepo: Repository<PaymentMethod>) {
+    @InjectRepository(PaymentMethod) private readonly paymentMethodRepo: Repository<PaymentMethod>,
+    
+    @Inject(forwardRef(() => UsersService))
+    private usersService: UsersService,
+    ) {
   }
 
 
@@ -83,7 +88,7 @@ export class PaymentMethodsService {
   }
 
   async addUserSetupPaymentIntent(createUserPaymentIntentDto, request) {
-    // const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
+    const stripeCustomerId = await this.usersService.findOne({ is_deleted: false, id: request.user.userId });
 
     const { payment_method_types: paymentMethodTypes, payment_method_id: paymentMethodId } = createUserPaymentIntentDto;
 

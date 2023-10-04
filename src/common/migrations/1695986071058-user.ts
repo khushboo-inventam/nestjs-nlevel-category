@@ -97,6 +97,13 @@ export class User1695986071058 implements MigrationInterface {
                   length: '255',
                   isNullable: true,
                 },
+                {
+                  name: 'stripe_user_id',
+                  type: 'varchar',
+                  length: '255',
+                  isNullable: true,
+                },
+                
               ],
             }),
             true,
